@@ -1,7 +1,11 @@
-# Authentication API Documentation
+# Package Delivery System API Documentation
 
 ## Overview
-This document explains the authentication APIs available in the system.
+This document explains all APIs available in the complete package delivery system with authentication, user management, parcel tracking, notifications, and OTP verification.
+
+---
+
+# Authentication API Documentation
 
 ## Authentication Strategy
 The system uses Passport.js with multiple authentication strategies:
@@ -36,10 +40,9 @@ The system uses Passport.js with multiple authentication strategies:
 - **Session Management:** Passport session serialization/deserialization for user persistence
 - **Multi-Provider Support:** Handles both email/password and Google OAuth authentication methods
 
-# User Management API Documentation
+---
 
-## Overview
-This document explains the user management APIs available in the system for CRUD operations and user administration.
+# User Management API Documentation
 
 ## User Management APIs
 
@@ -100,19 +103,20 @@ This document explains the user management APIs available in the system for CRUD
 - **DELIVERY_AGENT:** Can handle deliveries
 - **ADMIN:** Administrative privileges with user management
 - **SUPER_ADMIN:** Full system access with role management
-# Parcel Management API Documentation
 
-## Overview
-This document explains the parcel management APIs for package delivery system with complete tracking and status management.
+---
+
+# Parcel Management API Documentation
 
 ## Parcel Management APIs
 
 ### 1. Create Parcel
 - **Endpoint:** `POST /parcels/create`
 - **Purpose:** Creates a new parcel delivery request
-- **Description:** Allows senders to create parcel delivery requests with receiver information, weight, type, and delivery details. Auto-generates tracking ID and calculates fees
+- **Description:** Allows senders to create parcel delivery requests with receiver information, weight, type, and delivery details. Auto-generates tracking ID and calculates fees. **Automatically notifies admins** about new parcel requests
 - **Authorization:** SENDER role required
 - **Validation:** Requires parcel schema validation
+- **Special Feature:** Blocked users cannot create parcels
 
 ### 2. Get All Parcels
 - **Endpoint:** `GET /parcels/all-parcel`
@@ -136,74 +140,112 @@ This document explains the parcel management APIs for package delivery system wi
 ### 5. Cancel Parcel
 - **Endpoint:** `PATCH /parcels/cancel/:id`
 - **Purpose:** Cancels a parcel request or delivery
-- **Description:** Allows senders to cancel their own parcels or admins to cancel any parcel in cancellable status
+- **Description:** Allows senders to cancel their own parcels or admins to cancel any parcel in cancellable status. **Automatically sends notifications** to sender and admins
 - **Authorization:** ADMIN or SENDER roles required
+- **Status Restrictions:** Only REQUESTED, FLAG, BLOCKED, APPROVED status can be cancelled
 
 ### 6. Flag Parcel
 - **Endpoint:** `PATCH /parcels/flagged/:id`
 - **Purpose:** Flags a parcel for administrative review
-- **Description:** Marks parcel as flagged for issues like suspicious content or delivery problems
+- **Description:** Marks parcel as flagged for issues like suspicious content or delivery problems. **Automatically notifies sender** about flagged status
 - **Authorization:** ADMIN or SUPER_ADMIN roles required
+- **Status Restrictions:** Can flag REQUESTED, APPROVED, ASSIGNED_TO, DISPATCHED status
 
 ### 7. Block Parcel
 - **Endpoint:** `PATCH /parcels/blocked/:id`
 - **Purpose:** Blocks a parcel from further processing
-- **Description:** Prevents parcel from proceeding in delivery pipeline due to policy violations or issues
+- **Description:** Prevents parcel from proceeding in delivery pipeline due to policy violations or issues. **Automatically notifies sender** about blocked status
 - **Authorization:** ADMIN or SUPER_ADMIN roles required
+- **Status Restrictions:** Cannot block DELIVERED, IN_TRANSIT, SEND_OTP, PARCEL_DELIVERY_NOTIFICATION
 
 ### 8. Approve Parcel
 - **Endpoint:** `PATCH /parcels/approved/:trackingID`
 - **Purpose:** Approves parcel and assigns delivery agent
-- **Description:** Changes status to approved and assigns specific delivery agent to handle the parcel
+- **Description:** Changes status to approved and **automatically assigns specific delivery agent** to handle the parcel. Creates delivery info with assigned person details. **Automatically notifies sender** about approval
 - **Authorization:** ADMIN or SUPER_ADMIN roles required
 - **Body:** `{ "deliveryManId": "string" }`
+- **Special Feature:** Only REQUESTED or FLAG status can be approved
 
 ### 9. Dispatch Parcel
 - **Endpoint:** `PATCH /parcels/dispatch/:parcelId`
 - **Purpose:** Marks parcel as dispatched from warehouse
-- **Description:** Updates status to dispatched and sends email notification to receiver with dispatch details
+- **Description:** Updates status to dispatched and **automatically sends email notification** to receiver with complete dispatch details including delivery person info
 - **Authorization:** DELIVERY_AGENT role required
+- **Status Requirements:** Must be in ASSIGNED_TO status
 
 ### 10. Set In Transit
 - **Endpoint:** `PATCH /parcels/in_transit/:id`
 - **Purpose:** Updates parcel status to in transit
 - **Description:** Marks parcel as currently being transported by delivery agent
 - **Authorization:** DELIVERY_AGENT role required
+- **Status Requirements:** Must be in DISPATCHED status
 
 ### 11. Send OTP
 - **Endpoint:** `PATCH /parcels/otp/send/:id`
 - **Purpose:** Sends delivery confirmation OTP to receiver
-- **Description:** Generates and sends OTP to receiver's email for secure parcel delivery confirmation
+- **Description:** Generates and **automatically sends OTP via email** to receiver for secure parcel delivery confirmation. Creates OTP record with 3-minute expiry
 - **Authorization:** DELIVERY_AGENT role required
+- **Status Requirements:** Must be in IN_TRANSIT status
 
 ### 12. Verify OTP
 - **Endpoint:** `PATCH /parcels/otp/verify/:id`
 - **Purpose:** Confirms parcel delivery using OTP verification
-- **Description:** Validates OTP and marks parcel as delivered. Can be done by receiver or delivery agent
+- **Description:** Validates OTP and marks parcel as delivered. **Smart receiver handling:**
+  - **If receiver is registered:** Only the registered receiver can verify OTP
+  - **If receiver not registered:** Delivery agent can verify OTP on behalf of receiver
 - **Authorization:** DELIVERY_AGENT or RECEIVER roles required
 - **Body:** `{ "otp": number }`
+- **Status Requirements:** Must be in SEND_OTP status
+- **Security Feature:** Invalid OTP attempts are tracked and handled
 
-## Parcel Status Flow
-1. **REQUESTED** → Initial parcel creation
-2. **APPROVED** → Admin approval with delivery agent assignment
-3. **ASSIGNED_TO** → Delivery agent assigned
-4. **DISPATCHED** → Parcel sent from warehouse
-5. **IN_TRANSIT** → Being transported
-6. **SEND_OTP** → OTP sent for delivery confirmation
-7. **DELIVERED** → Successfully delivered and confirmed
+## Strict Parcel Status Flow
+```
+REQUESTED → APPROVED → ASSIGNED_TO → DISPATCHED → IN_TRANSIT → SEND_OTP → DELIVERED
+     ↓           ↓           ↓            ↓
+   FLAG      CANCELLED   CANCELLED    CANCELLED
+     ↓
+  BLOCKED
+```
 
 ## Additional Status Options
-- **CANCELLED** → Parcel cancelled by sender or admin
-- **FLAGGED** → Marked for administrative review
-- **BLOCKED** → Prevented from processing
+- **CANCELLED** → Parcel cancelled by sender or admin (with notifications)
+- **FLAGGED** → Marked for administrative review (with sender notification)
+- **BLOCKED** → Prevented from processing (with sender notification)
 - **RETURNED** → Returned to sender
 - **FAILED** → Delivery failed
 
-## Parcel Features
-- **Auto Tracking ID:** Unique MD5-based tracking identifiers
-- **Fee Calculation:** Automatic fee calculation based on weight and parcel type
-- **Status History:** Complete tracking event log with timestamps
-- **Email Notifications:** Automated emails for dispatch and status updates
-- **OTP Security:** Secure delivery confirmation with OTP verification
-- **Role-based Access:** Different permissions for senders, receivers, agents, and admins
-- **Real-time Tracking:** Complete parcel journey tracking from creation to delivery
+## Advanced Parcel Features
+- **Auto Tracking ID:** Unique MD5-based tracking identifiers with TRK prefix
+- **Dynamic Fee Calculation:** Automatic fee calculation based on weight and parcel type
+- **Complete Status History:** Full tracking event log with timestamps and location notes
+- **Smart Email Notifications:** Automated emails for dispatch with delivery person details
+- **Advanced OTP Security:** 
+  - 3-minute OTP expiry
+  - Invalid attempt tracking
+  - Role-based OTP verification (registered vs unregistered receivers)
+- **Intelligent Receiver Handling:**
+  - **Registered Receiver:** Full receiver privileges with OTP verification
+  - **Unregistered Receiver:** Delivery agent handles OTP verification
+- **Comprehensive Notification System:**
+  - Admin notifications for new requests and cancellations
+  - Sender notifications for approvals, flags, blocks, and cancellations
+  - Receiver notifications for dispatch and delivery updates
+- **Terminal Status Protection:** Prevents modification of delivered/cancelled parcels
+- **Role-based Parcel Access:** Different views and permissions for each user role
+- **Status Validation:** Strict status flow enforcement with proper error handling
+- **Real-time Tracking:** Complete parcel journey from creation to delivery with location updates
+
+## Notification Types
+- **NEW_PARCEL_REQUEST** → Notifies admins of new parcel requests
+- **PARCEL_APPROVED** → Notifies sender when parcel is approved
+- **PARCEL_CANCELLED** → Notifies relevant parties when parcel is cancelled
+- **PARCEL_FLAGGED** → Notifies sender when parcel is flagged
+- **PARCEL_BLOCKED** → Notifies sender when parcel is blocked
+
+## Special Business Rules
+1. **User Status Check:** Blocked users cannot create parcels
+2. **Receiver Registration Check:** System automatically detects if receiver email is registered
+3. **Single Admin Restriction:** Only one ADMIN user allowed in the system
+4. **Delivery Assignment:** Parcels must be approved before assignment to delivery agents
+5. **OTP Expiry Management:** OTPs expire after 3 minutes for security
+6. **Terminal Status Protection:** Delivered, cancelled, returned, and failed parcels cannot be modified
