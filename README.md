@@ -3,12 +3,17 @@
 ## Overview
 This document explains the authentication APIs available in the system.
 
+## Authentication Strategy
+The system uses Passport.js with multiple authentication strategies:
+- **Local Strategy:** Email/password authentication with bcrypt password hashing
+- **Google OAuth:** Social authentication (preparation for Google login integration)
+
 ## Authentication APIs
 
 ### 1. User Login
 - **Endpoint:** `POST /auth/login`
 - **Purpose:** Authenticates user credentials and returns access/refresh tokens
-- **Description:** Validates user login credentials using passport local strategy and sets authentication cookies
+- **Description:** Validates user login using email/password via passport local strategy. Checks if user exists, verifies password, and handles Google-authenticated users differently
 
 ### 2. User Logout
 - **Endpoint:** `POST /auth/logout`
@@ -25,3 +30,8 @@ This document explains the authentication APIs available in the system.
 - **Purpose:** Allows authenticated users to change their password
 - **Description:** Updates user password by verifying the old password and replacing it with a new hashed password
 - **Authorization:** Requires user authentication (all roles)
+
+## Authentication Features
+- **Password Security:** Uses bcrypt for password hashing and comparison
+- **Session Management:** Passport session serialization/deserialization for user persistence
+- **Multi-Provider Support:** Handles both email/password and Google OAuth authentication methods
