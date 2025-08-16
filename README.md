@@ -4,20 +4,27 @@
 This document explains all APIs available in the complete package delivery system with authentication, user management, parcel tracking, notifications, and OTP verification.
 
 ---
-
+## Base API : http://localhost:5000/api
 # Authentication API Documentation
 
 ## Authentication Strategy
-The system uses Passport.js with multiple authentication strategies:
+The system uses Passport.js with authentication strategies:
 - **Local Strategy:** Email/password authentication with bcrypt password hashing
-- **Google OAuth:** Social authentication (preparation for Google login integration)
 
 ## Authentication APIs
 
 ### 1. User Login
 - **Endpoint:** `POST /auth/login`
 - **Purpose:** Authenticates user credentials and returns access/refresh tokens
-- **Description:** Validates user login using email/password via passport local strategy. Checks if user exists, verifies password, and handles Google-authenticated users differently
+- **Description:** Validates user login using email/password via passport local strategy. Checks if user exists, verifies password
+  <pre>
+    // body
+    {
+    "email":"example@gmail.com",
+    "password":"example"
+}
+  </pre>
+  
 
 ### 2. User Logout
 - **Endpoint:** `POST /auth/logout`
