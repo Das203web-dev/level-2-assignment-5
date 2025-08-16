@@ -18,13 +18,38 @@ The system uses Passport.js with authentication strategies:
 - **Purpose:** Authenticates user credentials and returns access/refresh tokens
 - **Description:** Validates user login using email/password via passport local strategy. Checks if user exists, verifies password
   <pre>
-    // body
+    body
     {
     "email":"example@gmail.com",
-    "password":"example"
-}
+    "password":"example"}
   </pre>
-  
+  <pre>
+    {
+    "success": true,
+    "data": {
+        "accessToken": "1NiIsInR5cCI6IkpXVCJ9.YmFiYUBnbWFpbC5jb20iLCJyb2xlIjoiU0VOREVSIiwiaWF0IjoxNzU1MzQ5ODcwLCJleHAiOjE3NTU0MzYyNzB9.iqgjQUyjsKOds4z-CgHk",
+        "refreshToken": "eyJhbGInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJVU0VnbWFpbC5jb20iLVSIiwiaWF0IjoxNzU1MzQ5ODcwLCJleHAiOjE3NTc5NDE4NzB9.tnk6QX-gHI7wF6A3Aw-jrU9bYA7S0D4jSZbU",
+        "user": {
+            "isVerified": false,
+            "_id": "688d0c53b3cf",
+            "name": "Example",
+            "email": "example@gmail.com",
+            "userStatus": "ACTIVE",
+            "role": "SENDER",
+            "auths": [
+                {
+                    "provider": "credentials",
+                    "providerId": "example@gmail.com"
+                }
+            ],
+            "createdAt": "2025-08-01T18:49:22.724Z",
+            "updatedAt": "2025-08-06T19:46:24.313Z",
+            "userId": "USER-be6002f1"
+        }
+    },
+    "message": "User login successful"}
+  </pre>
+## ( note : the system will generate a userId automatically for future use )  
 
 ### 2. User Logout
 - **Endpoint:** `POST /auth/logout`
