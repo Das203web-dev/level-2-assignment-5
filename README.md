@@ -55,11 +55,30 @@ The system uses Passport.js with authentication strategies:
 - **Endpoint:** `POST /auth/logout`
 - **Purpose:** Logs out the user by clearing authentication cookies
 - **Description:** Removes accessToken and refreshToken cookies from the client browser
+- <pre>
+  response 
+  {
+    "success": true,
+    "data": null,
+    "message": "User logout successfully"
+}
+</pre>
+## ( note : The status is 200 )
 
 ### 3. Refresh Token
 - **Endpoint:** `POST /auth/refresh-token`
 - **Purpose:** Generates a new access token using the refresh token
 - **Description:** Creates a new access token when the current one expires, using the stored refresh token
+  <pre>
+    response 
+    {
+    "success": true,
+    "data": {
+        "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJVU0VSLWJlNjAwOGI2MDJmMSIsImVtYWlsIjoiYmFiYUBnbWFpbC5jb20iLCJyb2xlIjoiU0VOREVSIiwiaWF0IjoxNzU1MzczMjA4LCJleHAiOjE3NTU0NTk2MDh9.804whH7k6-SUoTEqatKnG3zKBO-GhW8NltBL5f2OMoY"
+    },
+    "message": "Access token updated"
+}
+  </pre>
 
 ### 4. Reset Password
 - **Endpoint:** `POST /auth/reset-password`
