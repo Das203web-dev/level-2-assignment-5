@@ -49,7 +49,7 @@ The system uses Passport.js with authentication strategies:
     },
     "message": "User login successful"}
   </pre>
-## ( note : the system will generate a userId automatically for future use )  
+## ( note : the system will generate a userId automatically for future use and status is 200 for this response)  
 
 ### 2. User Logout
 - **Endpoint:** `POST /auth/logout`
