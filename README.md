@@ -546,11 +546,12 @@ The system uses Passport.js with authentication strategies:
     "stack": "Error: Permission not granted\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:20:19\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
 </pre>
 
-### get all parcels
+### 2. Get All Parcels
 - **Endpoint:** `GET /parcel/all-parcel`
-- **Purpose:** Get parcels based on roles
-- **Description:** The SENDER can see all their sended parcels, RECEIVER will see their incoming parcels and ADMIN can see all the parcels
-- **Authorization:** All kinds of roles like SENDER, RECEIEVR, ADMIN
+- **Purpose:** Retrieves parcels based on user role and optional status filter
+- **Description:** Returns parcels filtered by user role - admins see all, senders see their sent parcels, receivers see incoming parcels
+- **Authorization:** ADMIN, SENDER, RECEIVER, SUPER_ADMIN roles
+- **Query Parameters:** `filter` (optional) - Filter by parcel status
   
 ```json
 {
@@ -591,13 +592,6 @@ The system uses Passport.js with authentication strategies:
   "message": "Parcel created successfully"
 }
 
-### 2. Get All Parcels
-- **Endpoint:** `GET /parcel/all-parcel`
-- **Purpose:** Retrieves parcels based on user role and optional status filter
-- **Description:** Returns parcels filtered by user role - admins see all, senders see their sent parcels, receivers see incoming parcels
-- **Authorization:** ADMIN, SENDER, RECEIVER, SUPER_ADMIN roles
-- **Query Parameters:** `filter` (optional) - Filter by parcel status
-  ```json
 {
   "success": true,
   "data": {
@@ -634,6 +628,51 @@ The system uses Passport.js with authentication strategies:
     "trackingId": "TRK-E46D91602A7F6115"
   },
   "message": "Parcel created successfully"
+}
+```
+
+### GET ALL PARCELS USING FILTER
+- **Endpoint:** `GET /parcel/all-parcel?filter=DELIVERED`
+
+```json
+{
+    "success": true,
+    "data": [
+        {
+            "_id": "68a1406a6dc17ae11b006f06",
+            "parcelName": "New parcel without coupon",
+            "senderId": "USER-be6008b602f1",
+            "senderAddress": "123/B, Gulshan Avenue, Dhaka",
+            "location": "Dhaka Warehouse",
+            "receiverInfo": {
+                "address": "House 11, Road 5, Banani, Dhaka",
+                "receiverId": "USER-0ec87a562fea",
+                "receiverName": "Example",
+                "receiverPhone": "017XXXXXXXX",
+                "receiverEmail": "example@gmail.com"
+            },
+            "parcelType": "FRAGILE",
+            "weight": 30,
+            "deliveryDate": "2025-08-10T10:00:00.000Z",
+            "parcelStatus": "DELIVERED",
+            "isPaid": false,
+            "trackingEvent": [
+                {
+                    "status": {
+                        "parcelStatus": "REQUESTED",
+                        "date": "2025-08-17T02:37:30.043Z"
+                    },
+                    "location": "Dhaka Warehouse",
+                    "note": "This parcel is REQUESTED on 8/17/2025, 8:37:30 AM"
+                }
+            ],
+            "createdAt": "2025-08-17T02:37:30.043Z",
+            "updatedAt": "2025-08-17T02:37:30.043Z",
+            "fee": 2900,
+            "trackingId": "TRK-74EF263949014E45"
+        }
+    ],
+    "message": "Parcel retrieved successfully"
 }
 ```
 
@@ -749,56 +788,502 @@ The system uses Passport.js with authentication strategies:
 
 ### 5. Cancel Parcel
 - **Endpoint:** `PATCH /parcel/cancel/:id`
-- **Purpose:** Cancels a parcel request or delivery
+- **Purpose:** Cancel a parcel request or delivery
 - **Description:** Allows senders to cancel their own parcels or admins to cancel any parcel in cancellable status. **Automatically sends notifications** to sender and admins
 - **Authorization:** ADMIN or SENDER roles required
 - **Status Restrictions:** Only REQUESTED, FLAG, BLOCKED, APPROVED status can be cancelled
 
+  <pre>
+    If the actual sender or admin is not cancelling parcel
+    {
+    "status": false,
+    "message": "Permission not granted",
+    "errorSource": [],
+    "err": "Permission not granted",
+    "stack": "Error: Permission not granted\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:23:19\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
+  </pre>
+  <pre>
+    {
+    "success": true,
+    "data": {
+        "_id": "68a13ea46dae11b006ee5",
+        "parcelName": "New parcel33333",
+        "senderId": "USER-be6008b602f1",
+        "senderAddress": "123/B, Gulshan Avenue, Dhaka",
+        "location": "Dhaka Warehouse",
+        "receiverInfo": {
+            "address": "House 11, Road 5, Banani, Dhaka",
+            "receiverId": "USER-0eca562fea",
+            "receiverName": "Example",
+            "receiverPhone": "017XXXXXXXX",
+            "receiverEmail": "example@gmail.com"
+        },
+        "parcelType": "FRAGILE",
+        "weight": 30,
+        "deliveryDate": "2025-08-10T10:00:00.000Z",
+        "parcelStatus": "CANCELLED",
+        "isPaid": false,
+        "coupon": "SUMMER2026",
+        "trackingEvent": [
+            {
+                "status": {
+                    "parcelStatus": "REQUESTED",
+                    "date": "2025-08-17T02:29:56.013Z"
+                },
+                "location": "Dhaka Warehouse",
+                "note": "This parcel is REQUESTED on 8/17/2025, 8:29:56 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "CANCELLED",
+                    "date": "2025-08-17T18:13:16.527Z"
+                },
+                "location": "",
+                "note": "This parcel is CANCELLED on 8/18/2025, 12:13:16 AM"
+            }
+        ],
+        "createdAt": "2025-08-17T02:29:56.013Z",
+        "updatedAt": "2025-08-17T18:13:16.575Z",
+        "fee": 2465,
+        "trackingId": "TRK-E46D91602A7F6115"
+    },
+    "message": "Parcel Cancelled successfully"
+}
+  </pre>
+
 ### 6. Flag Parcel
-- **Endpoint:** `PATCH /parcels/flagged/:id`
+- **Endpoint:** `PATCH /parcel/flagged/:id`
 - **Purpose:** Flags a parcel for administrative review
 - **Description:** Marks parcel as flagged for issues like suspicious content or delivery problems. **Automatically notifies sender** about flagged status
 - **Authorization:** ADMIN or SUPER_ADMIN roles required
 - **Status Restrictions:** Can flag REQUESTED, APPROVED, ASSIGNED_TO, DISPATCHED status
+  <pre>
+    response
+    {
+    "success": true,
+    "data": {
+        "_id": "68a12ff8de2b983357fb1",
+        "parcelName": "New parcel2",
+        "senderId": "USER-0ea562fea",
+        "senderAddress": "123/B, Gulshan Avenue, Dhaka",
+        "location": "Dhaka Warehouse",
+        "receiverInfo": {
+            "address": "House 11, Road 5, Banani, Dhaka",
+            "receiverId": "USER-0ec87a562fea",
+            "receiverName": "Example",
+            "receiverPhone": "017XXXXXXXX",
+            "receiverEmail": "example@gmail.com"
+        },
+        "parcelType": "FRAGILE",
+        "weight": 30,
+        "deliveryDate": "2025-08-10T10:00:00.000Z",
+        "parcelStatus": "FLAG",
+        "isPaid": false,
+        "trackingEvent": [
+            {
+                "status": {
+                    "parcelStatus": "REQUESTED",
+                    "date": "2025-08-17T01:27:20.428Z"
+                },
+                "location": "Dhaka Warehouse",
+                "note": "This parcel is REQUESTED on 8/17/2025, 7:27:20 AM"
+            },
+            {
+                "location": "Dhaka Warehouse",
+                "status": {
+                    "parcelStatus": "FLAG",
+                    "date": "2025-08-17T18:20:35.718Z"
+                },
+                "note": "This parcel is FLAG on 8/18/2025, 12:20:35 AM"
+            }
+        ],
+        "createdAt": "2025-08-17T01:27:20.427Z",
+        "updatedAt": "2025-08-17T18:20:35.717Z",
+        "fee": 2900,
+        "trackingId": "TRK-C6A99175E2AFE680"
+    },
+    "message": "This parcel is flagged"
+}
+  </pre>
 
 ### 7. Block Parcel
-- **Endpoint:** `PATCH /parcels/blocked/:id`
+- **Endpoint:** `PATCH /parcel/blocked/:id`
 - **Purpose:** Blocks a parcel from further processing
 - **Description:** Prevents parcel from proceeding in delivery pipeline due to policy violations or issues. **Automatically notifies sender** about blocked status
 - **Authorization:** ADMIN or SUPER_ADMIN roles required
 - **Status Restrictions:** Cannot block DELIVERED, IN_TRANSIT, SEND_OTP, PARCEL_DELIVERY_NOTIFICATION
-
+  <pre>
+    Response 
+    {
+    "success": true,
+    "data": {
+        "_id": "68a13a04e6763d001f53b1",
+        "parcelName": "New parcel22",
+        "senderId": "USER-be600855b602f1",
+        "senderAddress": "123/B, Gulshan Avenue, Dhaka",
+        "location": "Dhaka Warehouse",
+        "receiverInfo": {
+            "address": "House 11, Road 5, Banani, Dhaka",
+            "receiverId": "USER-0ec8a562fea",
+            "receiverName": "Example",
+            "receiverPhone": "017XXXXXXXX",
+            "receiverEmail": "example@gmail.com"
+        },
+        "parcelType": "FRAGILE",
+        "weight": 30,
+        "deliveryDate": "2025-08-10T10:00:00.000Z",
+        "parcelStatus": "BLOCKED",
+        "isPaid": false,
+        "coupon": "SUMMER2026",
+        "trackingEvent": [
+            {
+                "status": {
+                    "parcelStatus": "REQUESTED",
+                    "date": "2025-08-17T02:10:12.426Z"
+                },
+                "location": "Dhaka Warehouse",
+                "note": "This parcel is REQUESTED on 8/17/2025, 8:10:12 AM"
+            },
+            {
+                "location": "Dhaka Warehouse",
+                "status": {
+                    "parcelStatus": "BLOCKED",
+                    "date": "2025-08-17T18:22:55.022Z"
+                },
+                "note": "This parcel is BLOCKED on 8/18/2025, 12:22:55 AM"
+            }
+        ],
+        "createdAt": "2025-08-17T02:10:12.426Z",
+        "updatedAt": "2025-08-17T18:22:55.022Z",
+        "fee": 2465,
+        "trackingId": "TRK-7F51DF8C823604EF"
+    },
+    "message": "This parcel is blocked"
+}
+  </pre>
 ### 8. Approve Parcel
-- **Endpoint:** `PATCH /parcels/approved/:trackingID`
+- **Endpoint:** `PATCH /parcel/approved/:trackingID`
 - **Purpose:** Approves parcel and assigns delivery agent
-- **Description:** Changes status to approved and **automatically assigns specific delivery agent** to handle the parcel. Creates delivery info with assigned person details. **Automatically notifies sender** about approval
+- **Description:** Changes status to approved and ** assigns specific delivery agent** to handle the parcel. Creates delivery info with assigned person details. **Automatically notifies sender** about approval
 - **Authorization:** ADMIN or SUPER_ADMIN roles required
 - **Body:** `{ "deliveryManId": "string" }`
 - **Special Feature:** Only REQUESTED or FLAG status can be approved
+  <pre>
+    Response
+    {
+    "success": true,
+    "data": {
+        "_id": "68a12f3fdb6bd7e71939d3e1",
+        "parcelName": "New parcel",
+        "senderId": "USER-0ec87a562fea",
+        "senderAddress": "123/B, Gulshan Avenue, Dhaka",
+        "location": "Dhaka Warehouse",
+        "receiverInfo": {
+            "address": "House 11, Road 5, Banani, Dhaka",
+            "receiverId": "USER-0ec87a562fea",
+            "receiverName": "example",
+            "receiverPhone": "017XXXXXXXX",
+            "receiverEmail": "example@gmail.com"
+        },
+        "parcelType": "FRAGILE",
+        "weight": 30,
+        "deliveryDate": "2025-08-10T10:00:00.000Z",
+        "parcelStatus": "ASSIGNED_TO",
+        "isPaid": false,
+        "trackingEvent": [
+            {
+                "status": {
+                    "parcelStatus": "REQUESTED",
+                    "date": "2025-08-17T01:24:15.277Z"
+                },
+                "location": "Dhaka Warehouse",
+                "note": "This parcel is REQUESTED on 8/17/2025, 7:24:15 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "APPROVED",
+                    "date": "2025-08-17T18:26:43.081Z"
+                },
+                "location": "",
+                "note": "This parcel is APPROVED on 8/18/2025, 12:26:43 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "ASSIGNED_TO",
+                    "date": "2025-08-17T18:26:43.395Z"
+                },
+                "location": "",
+                "note": "This parcel is ASSIGNED_TO on 8/18/2025, 12:26:43 AM"
+            }
+        ],
+        "createdAt": "2025-08-17T01:24:15.275Z",
+        "updatedAt": "2025-08-17T18:26:43.396Z",
+        "fee": 2900,
+        "trackingId": "TRK-6B417A34210B1A80"
+    },
+    "message": "Parcel approved"
+}
+  </pre>
+## ( note : The parcel status will be ASSIGNED_TO not APPROVED cause only after the Parcel being APPROVED it can be ASSIGNED)
 
 ### 9. Dispatch Parcel
-- **Endpoint:** `PATCH /parcels/dispatch/:parcelId`
+- **Endpoint:** `PATCH /parcel/dispatch/:parcelId`
 - **Purpose:** Marks parcel as dispatched from warehouse
 - **Description:** Updates status to dispatched and **automatically sends email notification** to receiver with complete dispatch details including delivery person info
 - **Authorization:** DELIVERY_AGENT role required
 - **Status Requirements:** Must be in ASSIGNED_TO status
+  <pre>
+    response
+    {
+    "success": true,
+    "data": {
+        "_id": "68a13ac58229220613fb0aa7",
+        "parcelName": "New parcel222",
+        "senderId": "USER-be6008b602f1",
+        "senderAddress": "123/B, Gulshan Avenue, Dhaka",
+        "location": "Dhaka Warehouse",
+        "receiverInfo": {
+            "address": "House 11, Road 5, Banani, Dhaka",
+            "receiverId": "USER-0ec87a562fea",
+            "receiverName": "Example",
+            "receiverPhone": "017XXXXXXXX",
+            "receiverEmail": "example@gmail.com"
+        },
+        "parcelType": "FRAGILE",
+        "weight": 30,
+        "deliveryDate": "2025-08-10T10:00:00.000Z",
+        "parcelStatus": "DISPATCHED",
+        "isPaid": false,
+        "coupon": "SUMMER2026",
+        "trackingEvent": [
+            {
+                "status": {
+                    "parcelStatus": "REQUESTED",
+                    "date": "2025-08-17T02:13:25.495Z"
+                },
+                "location": "Dhaka Warehouse",
+                "note": "This parcel is REQUESTED on 8/17/2025, 8:13:25 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "APPROVED",
+                    "date": "2025-08-17T19:35:37.369Z"
+                },
+                "location": "",
+                "note": "This parcel is APPROVED on 8/18/2025, 1:35:37 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "ASSIGNED_TO",
+                    "date": "2025-08-17T19:35:37.705Z"
+                },
+                "location": "",
+                "note": "This parcel is ASSIGNED_TO on 8/18/2025, 1:35:37 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "DISPATCHED",
+                    "date": "2025-08-17T19:36:17.308Z"
+                },
+                "location": "",
+                "note": "This parcel is DISPATCHED on 8/18/2025, 1:36:17 AM"
+            }
+        ],
+        "createdAt": "2025-08-17T02:13:25.493Z",
+        "updatedAt": "2025-08-17T19:36:17.309Z",
+        "fee": 2465,
+        "trackingId": "TRK-CF7A5F5B3C2F1F84"
+    },
+    "message": "Parcel dispatched"
+}
+  </pre>
 
 ### 10. Set In Transit
-- **Endpoint:** `PATCH /parcels/in_transit/:id`
+- **Endpoint:** `PATCH /parcel/in_transit/:id`
 - **Purpose:** Updates parcel status to in transit
 - **Description:** Marks parcel as currently being transported by delivery agent
 - **Authorization:** DELIVERY_AGENT role required
 - **Status Requirements:** Must be in DISPATCHED status
+  <pre>
+    response
+    {
+    "success": true,
+    "data": {
+        "_id": "68a13ac58229220613fb0aa7",
+        "parcelName": "New parcel222",
+        "senderId": "USER-be6008b602f1",
+        "senderAddress": "123/B, Gulshan Avenue, Dhaka",
+        "location": "Dhaka Warehouse",
+        "receiverInfo": {
+            "address": "House 11, Road 5, Banani, Dhaka",
+            "receiverId": "USER-0ec87a562fea",
+            "receiverName": "example",
+            "receiverPhone": "017XXXXXXXX",
+            "receiverEmail": "example@gmail.com"
+        },
+        "parcelType": "FRAGILE",
+        "weight": 30,
+        "deliveryDate": "2025-08-10T10:00:00.000Z",
+        "parcelStatus": "IN_TRANSIT",
+        "isPaid": false,
+        "coupon": "SUMMER2026",
+        "trackingEvent": [
+            {
+                "status": {
+                    "parcelStatus": "REQUESTED",
+                    "date": "2025-08-17T02:13:25.495Z"
+                },
+                "location": "Dhaka Warehouse",
+                "note": "This parcel is REQUESTED on 8/17/2025, 8:13:25 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "APPROVED",
+                    "date": "2025-08-17T19:35:37.369Z"
+                },
+                "location": "",
+                "note": "This parcel is APPROVED on 8/18/2025, 1:35:37 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "ASSIGNED_TO",
+                    "date": "2025-08-17T19:35:37.705Z"
+                },
+                "location": "",
+                "note": "This parcel is ASSIGNED_TO on 8/18/2025, 1:35:37 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "DISPATCHED",
+                    "date": "2025-08-17T19:36:17.308Z"
+                },
+                "location": "",
+                "note": "This parcel is DISPATCHED on 8/18/2025, 1:36:17 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "DISPATCHED",
+                    "date": "2025-08-17T19:36:21.796Z"
+                },
+                "location": "Dhaka Warehouse",
+                "note": "This parcel is DISPATCHED on 8/18/2025, 1:36:21 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "IN_TRANSIT",
+                    "date": "2025-08-17T19:41:57.796Z"
+                },
+                "location": "",
+                "note": "This parcel is IN_TRANSIT on 8/18/2025, 1:41:57 AM"
+            }
+        ],
+        "createdAt": "2025-08-17T02:13:25.493Z",
+        "updatedAt": "2025-08-17T19:41:57.797Z",
+        "fee": 2465,
+        "trackingId": "TRK-CF7A5F5B3C2F1F84"
+    },
+    "message": "Parcel in IN_TRANSIT"
+}
+  </pre>
 
 ### 11. Send OTP
-- **Endpoint:** `PATCH /parcels/otp/send/:id`
+- **Endpoint:** `PATCH /parcel/otp/send/:id`
 - **Purpose:** Sends delivery confirmation OTP to receiver
-- **Description:** Generates and **automatically sends OTP via email** to receiver for secure parcel delivery confirmation. Creates OTP record with 3-minute expiry
+- **Description:** Generates and **automatically sends OTP via email** to receiver for secure parcel delivery confirmation. Creates OTP record with 1-minute expiry
 - **Authorization:** DELIVERY_AGENT role required
 - **Status Requirements:** Must be in IN_TRANSIT status
+  <pre>
+    response
+    {
+    "success": true,
+    "data": {
+        "_id": "68a13ac58229220613fb0aa7",
+        "parcelName": "New parcel222",
+        "senderId": "USER-be6008b602f1",
+        "senderAddress": "123/B, Gulshan Avenue, Dhaka",
+        "location": "Dhaka Warehouse",
+        "receiverInfo": {
+            "address": "House 11, Road 5, Banani, Dhaka",
+            "receiverId": "USER-0ec87a562fea",
+            "receiverName": "pakhi Hasan",
+            "receiverPhone": "017XXXXXXXX",
+            "receiverEmail": "shuvajitdas838@gmail.com"
+        },
+        "parcelType": "FRAGILE",
+        "weight": 30,
+        "deliveryDate": "2025-08-10T10:00:00.000Z",
+        "parcelStatus": "SEND_OTP",
+        "isPaid": false,
+        "coupon": "SUMMER2026",
+        "trackingEvent": [
+            {
+                "status": {
+                    "parcelStatus": "REQUESTED",
+                    "date": "2025-08-17T02:13:25.495Z"
+                },
+                "location": "Dhaka Warehouse",
+                "note": "This parcel is REQUESTED on 8/17/2025, 8:13:25 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "APPROVED",
+                    "date": "2025-08-17T19:35:37.369Z"
+                },
+                "location": "",
+                "note": "This parcel is APPROVED on 8/18/2025, 1:35:37 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "ASSIGNED_TO",
+                    "date": "2025-08-17T19:35:37.705Z"
+                },
+                "location": "",
+                "note": "This parcel is ASSIGNED_TO on 8/18/2025, 1:35:37 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "DISPATCHED",
+                    "date": "2025-08-17T19:36:17.308Z"
+                },
+                "location": "",
+                "note": "This parcel is DISPATCHED on 8/18/2025, 1:36:17 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "DISPATCHED",
+                    "date": "2025-08-17T19:36:21.796Z"
+                },
+                "location": "Dhaka Warehouse",
+                "note": "This parcel is DISPATCHED on 8/18/2025, 1:36:21 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "IN_TRANSIT",
+                    "date": "2025-08-17T19:41:57.796Z"
+                },
+                "location": "",
+                "note": "This parcel is IN_TRANSIT on 8/18/2025, 1:41:57 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "SEND_OTP",
+                    "date": "2025-08-17T19:44:09.425Z"
+                },
+                "location": "",
+                "note": "This parcel is SEND_OTP on 8/18/2025, 1:44:09 AM"
+            }
+        ],
+        "createdAt": "2025-08-17T02:13:25.493Z",
+        "updatedAt": "2025-08-17T19:44:09.426Z",
+        "fee": 2465,
+        "trackingId": "TRK-CF7A5F5B3C2F1F84"
+    },
+    "message": "OTP is send"
+}
+  </pre>
 
 ### 12. Verify OTP
-- **Endpoint:** `PATCH /parcels/otp/verify/:id`
+- **Endpoint:** `PATCH /parcel/otp/verify/:id`
 - **Purpose:** Confirms parcel delivery using OTP verification
 - **Description:** Validates OTP and marks parcel as delivered. **Smart receiver handling:**
   - **If receiver is registered:** Only the registered receiver can verify OTP
@@ -807,6 +1292,153 @@ The system uses Passport.js with authentication strategies:
 - **Body:** `{ "otp": number }`
 - **Status Requirements:** Must be in SEND_OTP status
 - **Security Feature:** Invalid OTP attempts are tracked and handled
+  otp interface
+export interface IOtp {
+    userId: string;
+    parcelId: string;
+    expireTime: Date;
+    otp: number;
+    attempt: number;
+    otpFor: "PARCEL_DELIVERY";
+    coolDownTime: Date;
+    maxLimit: number
+}
+
+  ```josn
+  if the receiver is registered but someone else is trying to confirm the parcel
+
+  {
+    "status": false,
+    "message": "You are not permitted to confirm this delivery",
+    "errorSource": [],
+    "err": "You are not permitted to confirm this delivery",
+    "stack": "Error: You are not permitted to confirm this delivery\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\parcel\\parcel.service.ts:280:11\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\parcel\\parcel.service.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"
+}
+```
+
+```json
+
+If the otp is mismatched
+{
+    "status": false,
+    "message": "Invalid OTP. You have 2 attempt(s) left.",
+    "errorSource": [],
+    "err": "Invalid OTP. You have 2 attempt(s) left.",
+    "stack": "Error: Invalid OTP. You have 2 attempt(s) left.\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\helperFunction\\helperfunction.ts:102:15\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\helperFunction\\helperfunction.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"
+}
+this is for secont wrong attemp
+{
+    "status": false,
+    "message": "Invalid OTP. You have 1 attempt(s) left.",
+    "errorSource": [],
+    "err": "Invalid OTP. You have 1 attempt(s) left.",
+    "stack": "Error: Invalid OTP. You have 1 attempt(s) left.\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\helperFunction\\helperfunction.ts:102:15\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\helperFunction\\helperfunction.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"
+} for third attempt
+{
+    "status": false,
+    "message": "Maximum attempts reached. A new OTP has been sent. Please wait 1 minutes before trying again.",
+    "errorSource": [],
+    "err": "Maximum attempts reached. A new OTP has been sent. Please wait 1 minutes before trying again.",
+    "stack": "Error: Maximum attempts reached. A new OTP has been sent. Please wait 1 minutes before trying again.\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\helperFunction\\helperfunction.ts:122:19\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\helperFunction\\helperfunction.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"
+}
+  ```
+```json
+For successfull response
+{
+    "success": true,
+    "data": {
+        "_id": "68a13ac58229220613fb0aa7",
+        "parcelName": "New parcel222",
+        "senderId": "USER-be6008b602f1",
+        "senderAddress": "123/B, Gulshan Avenue, Dhaka",
+        "location": "Dhaka Warehouse",
+        "receiverInfo": {
+            "address": "House 11, Road 5, Banani, Dhaka",
+            "receiverId": "USER-0ec87a562fea",
+            "receiverName": "Example",
+            "receiverPhone": "017XXXXXXXX",
+            "receiverEmail": "example@gmail.com"
+        },
+        "parcelType": "FRAGILE",
+        "weight": 30,
+        "deliveryDate": "2025-08-10T10:00:00.000Z",
+        "parcelStatus": "DELIVERED",
+        "isPaid": false,
+        "coupon": "SUMMER2026",
+        "trackingEvent": [
+            {
+                "status": {
+                    "parcelStatus": "REQUESTED",
+                    "date": "2025-08-17T02:13:25.495Z"
+                },
+                "location": "Dhaka Warehouse",
+                "note": "This parcel is REQUESTED on 8/17/2025, 8:13:25 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "APPROVED",
+                    "date": "2025-08-17T19:35:37.369Z"
+                },
+                "location": "",
+                "note": "This parcel is APPROVED on 8/18/2025, 1:35:37 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "ASSIGNED_TO",
+                    "date": "2025-08-17T19:35:37.705Z"
+                },
+                "location": "",
+                "note": "This parcel is ASSIGNED_TO on 8/18/2025, 1:35:37 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "DISPATCHED",
+                    "date": "2025-08-17T19:36:17.308Z"
+                },
+                "location": "",
+                "note": "This parcel is DISPATCHED on 8/18/2025, 1:36:17 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "DISPATCHED",
+                    "date": "2025-08-17T19:36:21.796Z"
+                },
+                "location": "Dhaka Warehouse",
+                "note": "This parcel is DISPATCHED on 8/18/2025, 1:36:21 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "IN_TRANSIT",
+                    "date": "2025-08-17T19:41:57.796Z"
+                },
+                "location": "",
+                "note": "This parcel is IN_TRANSIT on 8/18/2025, 1:41:57 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "SEND_OTP",
+                    "date": "2025-08-17T19:44:09.425Z"
+                },
+                "location": "",
+                "note": "This parcel is SEND_OTP on 8/18/2025, 1:44:09 AM"
+            },
+            {
+                "status": {
+                    "parcelStatus": "DELIVERED",
+                    "date": "2025-08-17T20:04:06.667Z"
+                },
+                "location": "Dhaka Warehouse",
+                "note": "This parcel is DELIVERED on 8/18/2025, 2:04:06 AM"
+            }
+        ],
+        "createdAt": "2025-08-17T02:13:25.493Z",
+        "updatedAt": "2025-08-17T20:04:06.707Z",
+        "fee": 2465,
+        "trackingId": "TRK-CF7A5F5B3C2F1F84"
+    },
+    "message": "OTP is verified"
+}
+```
 
 ## Strict Parcel Status Flow
 ```
@@ -827,10 +1459,10 @@ REQUESTED → APPROVED → ASSIGNED_TO → DISPATCHED → IN_TRANSIT → SEND_OT
 ## Advanced Parcel Features
 - **Auto Tracking ID:** Unique MD5-based tracking identifiers with TRK prefix
 - **Dynamic Fee Calculation:** Automatic fee calculation based on weight and parcel type
-- **Complete Status History:** Full tracking event log with timestamps and location notes
+- **Complete Status History:** Full tracking event log with date and time and location notes ( live location tracker is not implemented yet )
 - **Smart Email Notifications:** Automated emails for dispatch with delivery person details
 - **Advanced OTP Security:** 
-  - 3-minute OTP expiry
+  - 1-minute OTP expiry
   - Invalid attempt tracking
   - Role-based OTP verification (registered vs unregistered receivers)
 - **Intelligent Receiver Handling:**
@@ -840,10 +1472,8 @@ REQUESTED → APPROVED → ASSIGNED_TO → DISPATCHED → IN_TRANSIT → SEND_OT
   - Admin notifications for new requests and cancellations
   - Sender notifications for approvals, flags, blocks, and cancellations
   - Receiver notifications for dispatch and delivery updates
-- **Terminal Status Protection:** Prevents modification of delivered/cancelled parcels
 - **Role-based Parcel Access:** Different views and permissions for each user role
-- **Status Validation:** Strict status flow enforcement with proper error handling
-- **Real-time Tracking:** Complete parcel journey from creation to delivery with location updates
+- **Real-time Tracking:** Complete parcel journey from creation to delivery with location updates ( live location tracker is not implemented yet )
 
 ## Notification Types
 - **NEW_PARCEL_REQUEST** → Notifies admins of new parcel requests
@@ -856,6 +1486,6 @@ REQUESTED → APPROVED → ASSIGNED_TO → DISPATCHED → IN_TRANSIT → SEND_OT
 1. **User Status Check:** Blocked users cannot create parcels
 2. **Receiver Registration Check:** System automatically detects if receiver email is registered
 3. **Single Admin Restriction:** Only one ADMIN user allowed in the system
-4. **Delivery Assignment:** Parcels must be approved before assignment to delivery agents
-5. **OTP Expiry Management:** OTPs expire after 3 minutes for security
+4. **Delivery Assignment:** While approving a parcel ADMIN must assign DELIVERY_AGENT also
+5. **OTP Expiry Management:** OTPs expire after 1 minutes for security
 6. **Terminal Status Protection:** Delivered, cancelled, returned, and failed parcels cannot be modified
