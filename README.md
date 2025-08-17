@@ -1,9 +1,62 @@
-# Package Delivery System API Documentation
+# Parcel Delivery System API Documentation
 
 ## Overview
-This document explains all APIs available in the complete package delivery system with authentication, user management, parcel tracking, notifications, and OTP verification.
+This document explains all APIs available in the complete parcel delivery system with authentication, user management, parcel tracking, notifications, and OTP verification.
+
+
+## 🚀 Project Setup
+
+Follow these steps to run the project locally:
+
+### 1️⃣ Clone the repository
+```
+git clone <repo-url>
+cd level-2-assignment-5
+````
+
+### 2️⃣ Install dependencies
+
+```
+npm install
+```
+
+### 3️⃣ Configure environment variables
+
+* Copy `.env.example` to `.env`
+* Fill in your own values for MongoDB, JWT, Google OAuth, SMTP, etc.
+
+### 4️⃣ Run the development server
+
+```
+npm run dev
+```
+
+The server will start at:
+
+```
+http://localhost:5000
+```
 
 ---
+
+## ⚙️ Available Scripts
+
+* **`npm run dev`** → Runs the project in development mode using `ts-node-dev`
+* **`npm test`** → Runs tests (currently placeholder)
+
+---
+
+## 🛠 Tech Stack
+
+* **Backend Framework:** Express.js
+* **Database:** MongoDB (Mongoose)
+* **Authentication:** Passport.js (Google OAuth, Local Strategy), JWT
+* **Security:** bcryptjs, express-session
+* **Validation:** Zod
+* **Templating (emails/views):** EJS + Nodemailer
+* **Utilities:** dotenv, cors, cookie-parser, http-status-codes
+
+
 ## Base API : http://localhost:5000/api
 # Authentication API Documentation
 
@@ -492,6 +545,12 @@ The system uses Passport.js with authentication strategies:
     "err": "Permission not granted",
     "stack": "Error: Permission not granted\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:20:19\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
 </pre>
+
+### get all parcels
+- **Endpoint:** `GET /parcel/all-parcel`
+- **Purpose:** Get parcels based on roles
+- **Description:** The SENDER can see all their sended parcels, RECEIVER will see their incoming parcels and ADMIN can see all the parcels
+- **Authorization:** All kinds of roles like SENDER, RECEIEVR, ADMIN
 ```json
 {
   "success": true,
@@ -537,51 +596,112 @@ The system uses Passport.js with authentication strategies:
 - **Description:** Returns parcels filtered by user role - admins see all, senders see their sent parcels, receivers see incoming parcels
 - **Authorization:** ADMIN, SENDER, RECEIVER, SUPER_ADMIN roles
 - **Query Parameters:** `filter` (optional) - Filter by parcel status
+  ```json
+{
+  "success": true,
+  "data": {
+    "parcelName": "New parcel33333",
+    "senderId": "USER-be6008b602f1",
+    "senderAddress": "123/B, Gulshan Avenue, Dhaka",
+    "location": "Dhaka Warehouse",
+    "receiverInfo": {
+      "address": "House 11, Road 5, Banani, Dhaka",
+      "receiverId": "USER-0ec87a562fea",
+      "receiverName": "example",
+      "receiverPhone": "017XXXXXXXX",
+      "receiverEmail": "example@gmail.com"
+    },
+    "parcelType": "FRAGILE",
+    "weight": 30,
+    "deliveryDate": "2025-08-10T10:00:00.000Z",
+    "parcelStatus": "REQUESTED",
+    "isPaid": false,
+    "coupon": "SUMMER2026",
+    "trackingEvent": [
+      {
+        "location": "Dhaka Warehouse",
+        "status": {
+          "parcelStatus": "REQUESTED",
+          "date": "2025-08-17T02:29:56.013Z"
+        },
+        "note": "This parcel is REQUESTED on 8/17/2025, 8:29:56 AM"
+      }
+    ],
+    "createdAt": "2025-08-17T02:29:56.013Z",
+    "updatedAt": "2025-08-17T02:29:56.013Z",
+    "fee": 2465,
+    "trackingId": "TRK-E46D91602A7F6115"
+  },
+  "message": "Parcel created successfully"
+}
+```
+
+### 3. Get Incoming Parcels
+- **Endpoint:** `GET /parcel/incoming`
+- **Purpose:** Shows all parcels coming to the receiver
+- **Description:** Returns parcels addressed to the authenticated receiver that are not yet delivered or cancelled
+- **Authorization:** RECEIVER role required
   <pre>
-    Response
     {
     "success": true,
     "data": [
         {
+            "parcelName": "New parcel",
+            "senderId": "USER-0ec87a5fea",
+            "senderAddress": "123/B, Gulshan Avenue, Dhaka",
+            "location": "Dhaka Warehouse",
+            "receiverInfo": {
+                "address": "House 11, Road 5, Banani, Dhaka",
+                "receiverId": "USER-0eca562fea",
+                "receiverName": "Example",
+                "receiverPhone": "017XXXXXXXX",
+                "receiverEmail": "example@gmail.com"
+            },
+            "parcelType": "FRAGILE",
+            "weight": 30,
+            "deliveryDate": "2025-08-10T10:00:00.000Z",
+            "parcelStatus": "REQUESTED",
+            "isPaid": false,
+            "trackingEvent": [
+                {
+                    "status": {
+                        "parcelStatus": "REQUESTED",
+                        "date": "2025-08-17T01:24:15.277Z"
+                    },
+                    "location": "Dhaka Warehouse",
+                    "note": "This parcel is REQUESTED on 8/17/2025, 7:24:15 AM"
+                }
+            ],
+            "createdAt": "2025-08-17T01:24:15.275Z",
+            "updatedAt": "2025-08-17T01:24:15.275Z",
+            "fee": 2900,
+            "trackingId": "TRK-6B417A34210B1A80"
+        }],
+        "message": "All incoming parcels are here"}
+  </pre>
+  <pre>
+    If there is no incoming parcels
+    {
+    "status": false,
+    "message": "Sorry no parcels found",
+    "errorSource": [],
+    "err": "Sorry no parcels found",
+    "stack": "Error: Sorry no parcels found\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\parcel\\parcel.service.ts:302:15\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\parcel\\parcel.service.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"
+}
+  </pre>
+
+### 4. Get Parcel History
+- **Endpoint:** `GET /parcel/history`
+- **Purpose:** Shows delivered parcel history for receiver
+- **Description:** Returns all successfully delivered parcels for the authenticated receiver
+- **Authorization:** RECEIVER role required
+  <pre>
+    {
     "success": true,
-    "data": {
-        "parcelName": "New parcel without coupon",
-        "senderId": "USER-be6008b602f1",
-        "senderAddress": "123/B, Gulshan Avenue, Dhaka",
-        "location": "Dhaka Warehouse",
-        "receiverInfo": {
-            "address": "House 11, Road 5, Banani, Dhaka",
-            "receiverId": "USER-0ec87a562fea",
-            "receiverName": "pakhi Hasan",
-            "receiverPhone": "017XXXXXXXX",
-            "receiverEmail": "shuvajitdas838@gmail.com"
-        },
-        "parcelType": "FRAGILE",
-        "weight": 30,
-        "deliveryDate": "2025-08-10T10:00:00.000Z",
-        "parcelStatus": "REQUESTED",
-        "isPaid": false,
-        "trackingEvent": [
-            {
-                "location": "Dhaka Warehouse",
-                "status": {
-                    "parcelStatus": "REQUESTED",
-                    "date": "2025-08-17T02:37:30.043Z"
-                },
-                "note": "This parcel is REQUESTED on 8/17/2025, 8:37:30 AM"
-            }
-        ],
-        "createdAt": "2025-08-17T02:37:30.043Z",
-        "updatedAt": "2025-08-17T02:37:30.043Z",
-        "fee": 2900, // this fee is calculated without any COUPON
-        "trackingId": "TRK-74EF263949014E45"
-    },
-    "message": "Parcel created successfully"
-},
+    "data": [
         {
-            "_id": "68a13a04e606763d001f53b1",
-            "parcelName": "New parcel22",
-            "senderId": "USER-be6008b602f1",
+            "parcelName": "New parcel",
+            "senderId": "USER-0ec87a562fea",
             "senderAddress": "123/B, Gulshan Avenue, Dhaka",
             "location": "Dhaka Warehouse",
             "receiverInfo": {
@@ -594,43 +714,40 @@ The system uses Passport.js with authentication strategies:
             "parcelType": "FRAGILE",
             "weight": 30,
             "deliveryDate": "2025-08-10T10:00:00.000Z",
-            "parcelStatus": "REQUESTED",
+            "parcelStatus": "DELIVERED",
             "isPaid": false,
-            "coupon": "SUMMER2026",
             "trackingEvent": [
                 {
                     "status": {
                         "parcelStatus": "REQUESTED",
-                        "date": "2025-08-17T02:10:12.426Z"
+                        "date": "2025-08-17T01:24:15.277Z"
                     },
                     "location": "Dhaka Warehouse",
-                    "note": "This parcel is REQUESTED on 8/17/2025, 8:10:12 AM"
+                    "note": "This parcel is REQUESTED on 8/17/2025, 7:24:15 AM"
                 }
             ],
-            "createdAt": "2025-08-17T02:10:12.426Z",
-            "updatedAt": "2025-08-17T02:10:12.426Z",
-            "fee": 2465, // this parcel fee is calculated using coupon
-            "trackingId": "TRK-7F51DF8C823604EF"
+            "createdAt": "2025-08-17T01:24:15.275Z",
+            "updatedAt": "2025-08-17T01:24:15.275Z",
+            "fee": 2900,
+            "trackingId": "TRK-6B417A34210B1A80"
         }
     ],
-    "message": "Parcel retrieved successfully"
+    "message": "All delivered parcels are here"
+}
+  </pre>
+  <pre>
+    If there is no parcel available for the logged in RECEIVER
+    {
+    "status": false,
+    "message": "No parcel found",
+    "errorSource": [],
+    "err": "No parcel found",
+    "stack": "Error: No parcel found\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\parcel\\parcel.service.ts:313:15\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\parcel\\parcel.service.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"
 }
   </pre>
 
-### 3. Get Incoming Parcels
-- **Endpoint:** `GET /parcels/incoming`
-- **Purpose:** Shows all parcels coming to the receiver
-- **Description:** Returns parcels addressed to the authenticated receiver that are not yet delivered or cancelled
-- **Authorization:** RECEIVER role required
-
-### 4. Get Parcel History
-- **Endpoint:** `GET /parcels/history`
-- **Purpose:** Shows delivered parcel history for receiver
-- **Description:** Returns all successfully delivered parcels for the authenticated receiver
-- **Authorization:** RECEIVER role required
-
 ### 5. Cancel Parcel
-- **Endpoint:** `PATCH /parcels/cancel/:id`
+- **Endpoint:** `PATCH /parcel/cancel/:id`
 - **Purpose:** Cancels a parcel request or delivery
 - **Description:** Allows senders to cancel their own parcels or admins to cancel any parcel in cancellable status. **Automatically sends notifications** to sender and admins
 - **Authorization:** ADMIN or SENDER roles required
