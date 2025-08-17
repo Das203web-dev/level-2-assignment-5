@@ -164,7 +164,7 @@ The system uses Passport.js with authentication strategies:
 ## User Management APIs
 
 ### 1. Register User
-- **Endpoint:** `POST /users/register`
+- **Endpoint:** `POST /user/register`
 - **Purpose:** Creates a new user account
 - **Description:** Registers a new user with name, email, and password. Automatically generates unique userId and hashes password with bcrypt and another thing user has to select their role also while registering ( e.g : As a RECEIVER,SENDER,DELIVERY_AGENT )
 - **Authorization:** Public endpoint
@@ -485,7 +485,7 @@ The system uses Passport.js with authentication strategies:
 ## Parcel Management APIs
 
 ### 1. Create Parcel
-- **Endpoint:** `POST /parcels/create`
+- **Endpoint:** `POST /parcel/create`
 - **Purpose:** Creates a new parcel delivery request
 - **Description:** Allows senders to create parcel delivery requests with receiver information, weight, type, and delivery details. Auto-generates tracking ID and calculates fees. **Automatically notifies admins** about new parcel requests
 - **Authorization:** SENDER role required
@@ -1439,6 +1439,95 @@ For successfull response
     "message": "OTP is verified"
 }
 ```
+### 13. Public Parcel Tracking
+- **Endpoint:** `GET /parcel/track/:id`  
+- **Purpose:** Retrieve public tracking details of a parcel  
+- **Description:** Returns parcel’s **tracking ID, name, current status, delivery date, tracking events, and receiver name**. This route is public and does **not require authentication**  
+- **Authorization:** ❌ No authentication required  
+- **Status Requirements:** None (any status is allowed)
+
+  <pre>
+    response
+    {
+    "success": true,
+    "data": {
+        "trackingId": "TRK-CF7A5F5B3C2F1F84",
+        "parcelName": "New parcel222",
+        "parcelStatus": "DELIVERED",
+        "deliveryDate": "2025-08-10T10:00:00.000Z",
+        "trackingEvent": [
+            {
+                "location": "Dhaka Warehouse",
+                "status": "REQUESTED",
+                "date": "2025-08-17T02:13:25.495Z",
+                "note": "This parcel is REQUESTED on 8/17/2025, 8:13:25 AM"
+            },
+            {
+                "location": "",
+                "status": "APPROVED",
+                "date": "2025-08-17T19:35:37.369Z",
+                "note": "This parcel is APPROVED on 8/18/2025, 1:35:37 AM"
+            },
+            {
+                "location": "",
+                "status": "ASSIGNED_TO",
+                "date": "2025-08-17T19:35:37.705Z",
+                "note": "This parcel is ASSIGNED_TO on 8/18/2025, 1:35:37 AM"
+            },
+            {
+                "location": "",
+                "status": "DISPATCHED",
+                "date": "2025-08-17T19:36:17.308Z",
+                "note": "This parcel is DISPATCHED on 8/18/2025, 1:36:17 AM"
+            },
+            {
+                "location": "Dhaka Warehouse",
+                "status": "DISPATCHED",
+                "date": "2025-08-17T19:36:21.796Z",
+                "note": "This parcel is DISPATCHED on 8/18/2025, 1:36:21 AM"
+            },
+            {
+                "location": "",
+                "status": "IN_TRANSIT",
+                "date": "2025-08-17T19:41:57.796Z",
+                "note": "This parcel is IN_TRANSIT on 8/18/2025, 1:41:57 AM"
+            },
+            {
+                "location": "",
+                "status": "SEND_OTP",
+                "date": "2025-08-17T19:44:09.425Z",
+                "note": "This parcel is SEND_OTP on 8/18/2025, 1:44:09 AM"
+            },
+            {
+                "location": "Dhaka Warehouse",
+                "status": "DELIVERED",
+                "date": "2025-08-17T20:04:06.667Z",
+                "note": "This parcel is DELIVERED on 8/18/2025, 2:04:06 AM"
+            }
+        ],
+        "receiverName": "example"
+    },
+    "message": "Parcel details"
+}
+  </pre>
+
+---
+
+### 14. Delete Parcel
+- **Endpoint:** `DELETE /parcel/delete/:id`  
+- **Purpose:** Delete a parcel if it is still in **REQUESTED** status  
+- **Description:** Allows a **sender** to delete their parcel request before it is processed. Once status changes (e.g., APPROVED, IN_TRANSIT, DELIVERED), deletion is not allowed  
+- **Authorization:** Requires authentication (`SENDER` role only)  
+- **Status Requirements:** Parcel must be in **REQUESTED** status
+
+  <pre>
+    response
+    {
+    "success": true,
+    "data": null,
+    "message": "Parcel deleted"}
+  </pre>
+
 
 ## Strict Parcel Status Flow
 ```
