@@ -31,7 +31,6 @@ The system uses Passport.js with authentication strategies:
         "refreshToken": "eyJhbGInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJVU0VnbWFpbC5jb20iLVSIiwiaWF0IjoxNzU1MzQ5ODcwLCJleHAiOjE3NTc5NDE4NzB9.tnk6QX-gHI7wF6A3Aw-jrU9bYA7S0D4jSZbU",
         "user": {
             "isVerified": false,
-            "_id": "688d0c53b3cf",
             "name": "Example",
             "email": "example@gmail.com",
             "userStatus": "ACTIVE",
@@ -60,8 +59,7 @@ The system uses Passport.js with authentication strategies:
   {
     "success": true,
     "data": null,
-    "message": "User logout successfully"
-}
+    "message": "User logout successfully"}
 </pre>
 ## ( note : The status is 200 )
 
@@ -76,20 +74,33 @@ The system uses Passport.js with authentication strategies:
     "data": {
         "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJVU0VSLWJlNjAwOGI2MDJmMSIsImVtYWlsIjoiYmFiYUBnbWFpbC5jb20iLCJyb2xlIjoiU0VOREVSIiwiaWF0IjoxNzU1MzczMjA4LCJleHAiOjE3NTU0NTk2MDh9.804whH7k6-SUoTEqatKnG3zKBO-GhW8NltBL5f2OMoY"
     },
-    "message": "Access token updated"
-}
+    "message": "Access token updated"}
   </pre>
+## ( note : status is 200 )
 
 ### 4. Reset Password
 - **Endpoint:** `POST /auth/reset-password`
 - **Purpose:** Allows authenticated users to change their password
 - **Description:** Updates user password by verifying the old password and replacing it with a new hashed password
 - **Authorization:** Requires user authentication (all roles)
+  <pre>
+    body
+    {
+    "oldPassword":"example",
+    "newPassword":"newExample"}
+  </pre>
+  <pre>
+    {
+    "success": true,
+    "data": true,
+    "message": "Password reset successfully"}
+  </pre>
+## ( note : status is 200 )
 
 ## Authentication Features
 - **Password Security:** Uses bcrypt for password hashing and comparison
 - **Session Management:** Passport session serialization/deserialization for user persistence
-- **Multi-Provider Support:** Handles both email/password and Google OAuth authentication methods
+- **Multi-Provider Support:** Handles email/password authentication methods
 
 ---
 
@@ -100,45 +111,302 @@ The system uses Passport.js with authentication strategies:
 ### 1. Register User
 - **Endpoint:** `POST /users/register`
 - **Purpose:** Creates a new user account
-- **Description:** Registers a new user with name, email, and password. Automatically generates unique userId and hashes password with bcrypt
+- **Description:** Registers a new user with name, email, and password. Automatically generates unique userId and hashes password with bcrypt and another thing user has to select their role also while registering ( e.g : As a RECEIVER,SENDER,DELIVERY_AGENT )
 - **Authorization:** Public endpoint
 - **Validation:** Requires name, email, password validation via Zod schema
+  <pre>
+    body
+    {
+    "name":"example",
+    "email" :"example@gmail.com",
+    "password":"example",
+    "role":"RECEIVER"}
+  <pre>
+    response
+    {
+    "success": true,
+    "data": {
+        "name": "example",
+        "email": "example@gmail.com",
+        "userStatus": "ACTIVE",
+        "isVerified": false,
+        "role": "RECEIVER",
+        "auths": [
+            {
+                "provider": "credentials",
+                "providerId": "example@gmail.com"
+            }
+        ],
+        "createdAt": "2025-08-16T19:48:51.334Z",
+        "updatedAt": "2025-08-16T19:48:51.334Z",
+        "userId": "USER-bd1817582540"
+    },
+    "message": "User created successfully"}
+  </pre>
+  <pre>
+    Error body
+    {
+    "status": false,
+    "message": "Email is already exist",
+    "errorSource": [],
+    "err": "Email is already exist",
+    "stack": "Error: Email is already exist\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\user\\user.service.ts:20:15\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\user\\user.service.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
+  </pre>
+  <pre>
+    zod error body 
+    {
+    "status": false,
+    "message": "Zod error",
+    "errorSource": [
+        {
+            "path": "role",
+            "message": "Role is required"
+        }
+    ],
+    "err": "[\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"role\"\n    ],\n    \"message\": \"Role is required\"\n  }\n]"
+  </pre>
+
+  ## ( note : status is 200 and the response is coming without the password field for better security )
 
 ### 2. Get All Users
-- **Endpoint:** `GET /users/all`
+- **Endpoint:** `GET /user/all`
 - **Purpose:** Retrieves list of all users in the system
 - **Description:** Returns all users without password field, accessible only to administrators
 - **Authorization:** ADMIN or SUPER_ADMIN roles required
+  <pre>
+    {
+    "success": true,
+    "data": [
+        {
+            "isVerified": false,
+            "_id": "6892bd946f9b03a9e6fbc64d",
+            "name": "Bhoot",
+            "email": "bhoot@gmail.com",
+            "userStatus": "ACTIVE",
+            "role": "SENDER",
+            "auths": [
+                {
+                    "provider": "credentials",
+                    "providerId": "bhoot@gmail.com"
+                }
+            ],
+            "createdAt": "2025-08-06T02:27:32.879Z",
+            "updatedAt": "2025-08-06T02:27:32.879Z",
+            "userId": "USER-55df2174e599"
+        },
+        {
+            "_id": "68a0e0a3467c6c090bc058be",
+            "name": "Example",
+            "email": "example@gmail.com",
+            "userStatus": "ACTIVE",
+            "isVerified": false,
+            "role": "ADMIN",
+            "auths": [
+                {
+                    "provider": "credentials",
+                    "providerId": "shuvajitdas@gmail.com"
+                }
+            ],
+            "createdAt": "2025-08-16T19:48:51.334Z",
+            "updatedAt": "2025-08-16T19:48:51.334Z",
+            "userId": "USER-bd1817582540"
+        }
+    ],
+    "message": "All user retrieved successfully"}
+  </pre>
+  <pre>
+    error body if anyone wants to access without permission from the administrative
+    {
+    "status": false,
+    "message": "Permission not granted",
+    "errorSource": [],
+    "err": "Permission not granted",
+    "stack": "Error: Permission not granted\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:23:19\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
+  </pre>
+  
+## ( note : This is for admin role access EMAIL : example@gmail.com , PASSWORD : example )
 
 ### 3. Update User Profile
-- **Endpoint:** `PATCH /users/update`
+- **Endpoint:** `PATCH /user/update`
 - **Purpose:** Updates current user's profile information
 - **Description:** Allows users to update their name, address, and phone. Restricted fields like email, role, and userStatus cannot be modified
 - **Authorization:** All authenticated users (ADMIN, DELIVERY_AGENT, RECEIVER, SENDER)
+  <pre>
+    body
+    {
+    "name":"Example"}
+  </pre>
+  <pre>
+    {
+    "success": true,
+    "data": {
+        "name": "Example",
+        "email": "example@gmail.com",
+        "userStatus": "ACTIVE",
+        "role": "SENDER",
+        "auths": [
+            {
+                "provider": "credentials",
+                "providerId": "example@gmail.com"
+            }
+        ],
+        "createdAt": "2025-08-01T18:49:22.724Z",
+        "updatedAt": "2025-08-16T22:44:59.133Z",
+        "userId": "USER-be6008b602f1",
+        "isVerified": false
+    },
+    "message": "User updated successfully"}
+  </pre>
 
 ### 4. Update User Role
-- **Endpoint:** `PATCH /users/update/role/:id`
+- **Endpoint:** `PATCH /user/update/role/:id`
 - **Purpose:** Updates user role and permissions
 - **Description:** Allows SUPER_ADMIN to change user roles. Prevents multiple ADMIN users and restricts field modifications
 - **Authorization:** SUPER_ADMIN role required
-
+  <pre>
+    {
+    "status": false,
+    "message": "Permission not granted",
+    "errorSource": [],
+    "err": "Permission not granted",
+    "stack": "Error: Permission not granted\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:23:19\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
+  </pre>
+  <pre>
+    if ADMIN is already exist then this error 
+    {
+    "status": false,
+    "message": "There is already a ADMIn",
+    "errorSource": [],
+    "err": "There is already a ADMIn",
+    "stack": "Error: There is already a ADMIn\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\user\\user.service.ts:77:19\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\user\\user.service.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
+  </pre>
+<pre>
+  response 
+  {
+    "success": true,
+    "data": {
+        "isVerified": false,
+        "name": "Maa",
+        "email": "ma@gmail.com",
+        "userStatus": "ACTIVE",
+        "role": "ADMIN",
+        "auths": [
+            {
+                "provider": "credentials",
+                "providerId": "ma@gmail.com"
+            }
+        ],
+        "createdAt": "2025-08-01T18:24:58.529Z",
+        "updatedAt": "2025-08-16T23:07:27.287Z",
+        "userId": "USER-eaa69f5f2dff"
+    },
+    "message": "User updated successfully"}
+</pre>
 ### 5. Delete User
-- **Endpoint:** `DELETE /users/delete/:id`
+- **Endpoint:** `DELETE /user/delete/:id`
 - **Purpose:** Permanently removes user from the system
-- **Description:** Deletes user account with role-based restrictions. SUPER_ADMIN can delete any user except other SUPER_ADMINs
+- **Description:** Deletes user account with role-based restrictions. SUPER_ADMIN can delete any user except other SUPER_ADMINs and ADMIN also can delete other users except SUPER_ADMIN
 - **Authorization:** SUPER_ADMIN or ADMIN roles required
+  <Pre>
+    response 
+    {
+    "success": true,
+    "data": null,
+    "message": "User deleted successfully"}
+  </Pre>
+  <pre>
+    If ADMIN try to delete SUPER_ADMIN then error body is
+    {
+    "status": false,
+    "message": "You are not permitted to delete a SUPER_ADMIN",
+    "errorSource": [],
+    "err": "You are not permitted to delete a SUPER_ADMIN",
+    "stack": "Error: You are not permitted to delete a SUPER_ADMIN\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\user\\user.service.ts:92:19\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\user\\user.service.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
+  </pre>
 
 ### 6. Block User
-- **Endpoint:** `POST /users/block/:userId`
+- **Endpoint:** `POST /user/block/:userId`
 - **Purpose:** Blocks user account to prevent access
 - **Description:** Sets user status to BLOCKED, preventing them from accessing the system
 - **Authorization:** ADMIN or SUPER_ADMIN roles required
+  <pre>
+    if the user Role is not ADMIN or SUPER_ADMIN
+    {
+    "status": false,
+    "message": "Permission not granted",
+    "errorSource": [],
+    "err": "Permission not granted",
+    "stack": "Error: Permission not granted\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:23:19\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
+  </pre>
+  <pre>
+    If the user not found
+    {
+    "status": false,
+    "message": "User not found",
+    "errorSource": [],
+    "err": "User not found",
+    "stack": "Error: User not found\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\user\\user.service.ts:105:15\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\user\\user.service.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
+  </pre>
+  <pre>
+    response
+    {
+    "success": true,
+    "data": {
+        "name": "Shuvo",
+        "email": "shuvajitdas838@gmail.com",
+        "userStatus": "BLOCKED",
+        "isVerified": false,
+        "role": "RECEIVER",
+        "auths": [
+            {
+                "provider": "credentials",
+                "providerId": "shuvajitdas838@gmail.com"
+            }
+        ],
+        "createdAt": "2025-08-08T10:28:59.819Z",
+        "updatedAt": "2025-08-16T23:54:32.577Z",
+        "userId": "USER-0ec87a562fea"
+    },
+    "message": "User is blocked"
+}
+  </pre>
 
 ### 7. Unblock User
-- **Endpoint:** `POST /users/unblock/:userId`
+- **Endpoint:** `POST /user/unblock/:userId`
 - **Purpose:** Unblocks previously blocked user account
 - **Description:** Changes user status from BLOCKED to ACTIVE, restoring system access
 - **Authorization:** ADMIN or SUPER_ADMIN roles required
+  <pre>
+    if user is not ADMIN or SUPER_ADMIN then this error message will come
+    {
+    "status": false,
+    "message": "Permission not granted",
+    "errorSource": [],
+    "err": "Permission not granted",
+    "stack": "Error: Permission not granted\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:23:19\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
+  </pre>
+  <pre>
+    response
+    {
+    "success": true,
+    "data": {
+        "name": "Shuvo",
+        "email": "shuvajitdas838@gmail.com",
+        "userStatus": "ACTIVE",
+        "isVerified": false,
+        "role": "RECEIVER",
+        "auths": [
+            {
+                "provider": "credentials",
+                "providerId": "shuvajitdas838@gmail.com"
+            }
+        ],
+        "createdAt": "2025-08-08T10:28:59.819Z",
+        "updatedAt": "2025-08-17T00:25:34.334Z",
+        "userId": "USER-0ec87a562fea"
+    },
+    "message": "User is unblocked"}
+  </pre>
 
 ## User Features
 - **Password Security:** Bcrypt hashing with configurable salt rounds
@@ -146,7 +414,7 @@ The system uses Passport.js with authentication strategies:
 - **Role-Based Access:** Multiple user roles (SENDER, RECEIVER, DELIVERY_AGENT, ADMIN, SUPER_ADMIN)
 - **User Status Management:** Active/Blocked status tracking
 - **Data Validation:** Zod schema validation for user input
-- **Multi-Auth Support:** Supports credential and OAuth authentication providers
+- **Auth Support:** Supports credential authentication
 
 ## User Roles
 - **SENDER:** Can send packages
