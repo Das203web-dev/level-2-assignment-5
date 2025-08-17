@@ -551,6 +551,7 @@ The system uses Passport.js with authentication strategies:
 - **Purpose:** Get parcels based on roles
 - **Description:** The SENDER can see all their sended parcels, RECEIVER will see their incoming parcels and ADMIN can see all the parcels
 - **Authorization:** All kinds of roles like SENDER, RECEIEVR, ADMIN
+  
 ```json
 {
   "success": true,
