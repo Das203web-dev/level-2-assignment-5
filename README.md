@@ -23,7 +23,7 @@ npm install
 ### 3️⃣ Configure environment variables
 
 * Copy `.env.example` to `.env`
-* Fill in your own values for MongoDB, JWT, Google OAuth, SMTP, etc.
+* Fill in your own values for MongoDB, JWT, SMTP, etc.
 
 ### 4️⃣ Run the development server
 
@@ -50,7 +50,7 @@ http://localhost:5000
 
 * **Backend Framework:** Express.js
 * **Database:** MongoDB (Mongoose)
-* **Authentication:** Passport.js (Google OAuth, Local Strategy), JWT
+* **Authentication:** Passport.js (Local Strategy), JWT
 * **Security:** bcryptjs, express-session
 * **Validation:** Zod
 * **Templating (emails/views):** EJS + Nodemailer
