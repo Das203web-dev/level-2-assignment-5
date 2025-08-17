@@ -492,46 +492,45 @@ The system uses Passport.js with authentication strategies:
     "err": "Permission not granted",
     "stack": "Error: Permission not granted\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:20:19\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
 </pre>
-<pre>
-  Successfull response
-  {
-    "success": true,
-    "data": {
-        "parcelName": "New parcel33333", // parcel name is unique
-        "senderId": "USER-be6008b602f1",
-        "senderAddress": "123/B, Gulshan Avenue, Dhaka",
-        "location": "Dhaka Warehouse",
-        "receiverInfo": {
-            "address": "House 11, Road 5, Banani, Dhaka",
-            "receiverId": "USER-0ec87a562fea",
-            "receiverName": "example",
-            "receiverPhone": "017XXXXXXXX",
-            "receiverEmail": "example@gmail.com"
-        },
-        "parcelType": "FRAGILE",
-        "weight": 30,
-        "deliveryDate": "2025-08-10T10:00:00.000Z",
-        "parcelStatus": "REQUESTED",
-        "isPaid": false,
-        "coupon": "SUMMER2026",
-        "trackingEvent": [
-            {
-                "location": "Dhaka Warehouse",
-                "status": {
-                    "parcelStatus": "REQUESTED",
-                    "date": "2025-08-17T02:29:56.013Z"
-                },
-                "note": "This parcel is REQUESTED on 8/17/2025, 8:29:56 AM"
-            }
-        ],
-        "createdAt": "2025-08-17T02:29:56.013Z",
-        "updatedAt": "2025-08-17T02:29:56.013Z",
-        "fee": 2465,
-        "trackingId": "TRK-E46D91602A7F6115"
+```json
+{
+  "success": true,
+  "data": {
+    "parcelName": "New parcel33333",
+    "senderId": "USER-be6008b602f1",
+    "senderAddress": "123/B, Gulshan Avenue, Dhaka",
+    "location": "Dhaka Warehouse",
+    "receiverInfo": {
+      "address": "House 11, Road 5, Banani, Dhaka",
+      "receiverId": "USER-0ec87a562fea",
+      "receiverName": "example",
+      "receiverPhone": "017XXXXXXXX",
+      "receiverEmail": "example@gmail.com"
     },
-    "message": "Parcel created successfully"
+    "parcelType": "FRAGILE",
+    "weight": 30,
+    "deliveryDate": "2025-08-10T10:00:00.000Z",
+    "parcelStatus": "REQUESTED",
+    "isPaid": false,
+    "coupon": "SUMMER2026",
+    "trackingEvent": [
+      {
+        "location": "Dhaka Warehouse",
+        "status": {
+          "parcelStatus": "REQUESTED",
+          "date": "2025-08-17T02:29:56.013Z"
+        },
+        "note": "This parcel is REQUESTED on 8/17/2025, 8:29:56 AM"
+      }
+    ],
+    "createdAt": "2025-08-17T02:29:56.013Z",
+    "updatedAt": "2025-08-17T02:29:56.013Z",
+    "fee": 2465,
+    "trackingId": "TRK-E46D91602A7F6115"
+  },
+  "message": "Parcel created successfully"
 }
-</pre>
+
 ### 2. Get All Parcels
 - **Endpoint:** `GET /parcel/all-parcel`
 - **Purpose:** Retrieves parcels based on user role and optional status filter
