@@ -61,6 +61,7 @@ The system uses Passport.js with authentication strategies:
     "data": null,
     "message": "User logout successfully"}
 </pre>
+
 ## ( note : The status is 200 )
 
 ### 3. Refresh Token
@@ -95,6 +96,7 @@ The system uses Passport.js with authentication strategies:
     "data": true,
     "message": "Password reset successfully"}
   </pre>
+  
 ## ( note : status is 200 )
 
 ## Authentication Features
@@ -417,8 +419,8 @@ The system uses Passport.js with authentication strategies:
 - **Auth Support:** Supports credential authentication
 
 ## User Roles
-- **SENDER:** Can send packages
-- **RECEIVER:** Can receive packages  
+- **SENDER:** Can send parcels
+- **RECEIVER:** Can receive parcels  
 - **DELIVERY_AGENT:** Can handle deliveries
 - **ADMIN:** Administrative privileges with user management
 - **SUPER_ADMIN:** Full system access with role management
@@ -435,14 +437,186 @@ The system uses Passport.js with authentication strategies:
 - **Description:** Allows senders to create parcel delivery requests with receiver information, weight, type, and delivery details. Auto-generates tracking ID and calculates fees. **Automatically notifies admins** about new parcel requests
 - **Authorization:** SENDER role required
 - **Validation:** Requires parcel schema validation
-- **Special Feature:** Blocked users cannot create parcels
-
+- **Special Feature:** Blocked users cannot create parcels and another is i have implemented a system which will try to find out that the receiver is our registered user or not. If registered then that receiver id will be set into the parcels receiver info and if not registered then no userId will be added ( note : i have created this system thinking that the senders can send parcels to anyone who is our registered user and also unregistered users. There is a coupon system also and the fee will be calculated based on the parcel weight ) 
+  <pre>
+    this is the fee for different type of parcels
+    const feeObjects: Record<ParcelType, { base: number; freeWeight: number; ratePerKg: number; }> = {
+    [ParcelType.DOCUMENT]: { base: 50, freeWeight: 2, ratePerKg: 50 },
+    [ParcelType.BOX]: { base: 80, freeWeight: 4, ratePerKg: 50 },
+    [ParcelType.FRAGILE]: { base: 100, freeWeight: 2, ratePerKg: 100 },
+    [ParcelType.LARGE]: { base: 150, freeWeight: 10, ratePerKg: 150 }};
+  </pre>
+  <pre>
+    body
+    {
+  "parcelName": "New parcel33333",
+  "senderAddress": "123/B, Gulshan Avenue, Dhaka",
+  "location": "Dhaka Warehouse",
+  "receiverInfo": {
+    "receiverName": "pakhi Hasan",
+    "receiverPhone": "017XXXXXXXX",
+    "receiverEmail": "shuvajitdas838@gmail.com",
+    "address": "House 11, Road 5, Banani, Dhaka"
+  },
+  "parcelType": "FRAGILE",
+  "weight": 30,
+  "deliveryDate": "2025-08-10T10:00:00.000Z",
+  "coupon":"SUMMER2026"}
+    ## ( note : If you did not provide any coupon then the normal fee will be applied )
+  </pre>
+  <pre>
+    if coupon is reached its max limit
+    {
+    "status": false,
+    "message": "The coupon SUMMER2026 reached its max limit",
+    "errorSource": [],
+    "err": "The coupon SUMMER2026 reached its max limit",
+    "stack": "Error: The coupon SUMMER2026 reached its max limit\n    at model.<anonymous> (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\parcel\\parcel.model.ts:226:33)\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\parcel\\parcel.model.ts:38:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
+  </pre>
+  <pre>
+    If user is trying to submit the Coupon even after giving the upper message then this error message will be appeared
+    {
+    "status": false,
+    "message": "The coupon SUMMER2026 is expired",
+    "errorSource": [],
+    "err": "The coupon SUMMER2026 is expired",
+    "stack": "Error: The coupon SUMMER2026 is expired\n    at model.<anonymous> (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\parcel\\parcel.model.ts:219:33)\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\parcel\\parcel.model.ts:38:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"
+}
+  </pre>
+<pre>
+  If RECEIVER is trying to create a parcel then this error message will be returned
+  {
+    "status": false,
+    "message": "Permission not granted",
+    "errorSource": [],
+    "err": "Permission not granted",
+    "stack": "Error: Permission not granted\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:20:19\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
+</pre>
+<pre>
+  Successfull response
+  {
+    "success": true,
+    "data": {
+        "parcelName": "New parcel33333", // parcel name is unique
+        "senderId": "USER-be6008b602f1",
+        "senderAddress": "123/B, Gulshan Avenue, Dhaka",
+        "location": "Dhaka Warehouse",
+        "receiverInfo": {
+            "address": "House 11, Road 5, Banani, Dhaka",
+            "receiverId": "USER-0ec87a562fea",
+            "receiverName": "example",
+            "receiverPhone": "017XXXXXXXX",
+            "receiverEmail": "example@gmail.com"
+        },
+        "parcelType": "FRAGILE",
+        "weight": 30,
+        "deliveryDate": "2025-08-10T10:00:00.000Z",
+        "parcelStatus": "REQUESTED",
+        "isPaid": false,
+        "coupon": "SUMMER2026",
+        "trackingEvent": [
+            {
+                "location": "Dhaka Warehouse",
+                "status": {
+                    "parcelStatus": "REQUESTED",
+                    "date": "2025-08-17T02:29:56.013Z"
+                },
+                "note": "This parcel is REQUESTED on 8/17/2025, 8:29:56 AM"
+            }
+        ],
+        "createdAt": "2025-08-17T02:29:56.013Z",
+        "updatedAt": "2025-08-17T02:29:56.013Z",
+        "fee": 2465,
+        "trackingId": "TRK-E46D91602A7F6115"
+    },
+    "message": "Parcel created successfully"
+}
+</pre>
 ### 2. Get All Parcels
-- **Endpoint:** `GET /parcels/all-parcel`
+- **Endpoint:** `GET /parcel/all-parcel`
 - **Purpose:** Retrieves parcels based on user role and optional status filter
 - **Description:** Returns parcels filtered by user role - admins see all, senders see their sent parcels, receivers see incoming parcels
 - **Authorization:** ADMIN, SENDER, RECEIVER, SUPER_ADMIN roles
 - **Query Parameters:** `filter` (optional) - Filter by parcel status
+  <pre>
+    Response
+    {
+    "success": true,
+    "data": [
+        {
+    "success": true,
+    "data": {
+        "parcelName": "New parcel without coupon",
+        "senderId": "USER-be6008b602f1",
+        "senderAddress": "123/B, Gulshan Avenue, Dhaka",
+        "location": "Dhaka Warehouse",
+        "receiverInfo": {
+            "address": "House 11, Road 5, Banani, Dhaka",
+            "receiverId": "USER-0ec87a562fea",
+            "receiverName": "pakhi Hasan",
+            "receiverPhone": "017XXXXXXXX",
+            "receiverEmail": "shuvajitdas838@gmail.com"
+        },
+        "parcelType": "FRAGILE",
+        "weight": 30,
+        "deliveryDate": "2025-08-10T10:00:00.000Z",
+        "parcelStatus": "REQUESTED",
+        "isPaid": false,
+        "trackingEvent": [
+            {
+                "location": "Dhaka Warehouse",
+                "status": {
+                    "parcelStatus": "REQUESTED",
+                    "date": "2025-08-17T02:37:30.043Z"
+                },
+                "note": "This parcel is REQUESTED on 8/17/2025, 8:37:30 AM"
+            }
+        ],
+        "createdAt": "2025-08-17T02:37:30.043Z",
+        "updatedAt": "2025-08-17T02:37:30.043Z",
+        "fee": 2900, // this fee is calculated without any COUPON
+        "trackingId": "TRK-74EF263949014E45"
+    },
+    "message": "Parcel created successfully"
+},
+        {
+            "_id": "68a13a04e606763d001f53b1",
+            "parcelName": "New parcel22",
+            "senderId": "USER-be6008b602f1",
+            "senderAddress": "123/B, Gulshan Avenue, Dhaka",
+            "location": "Dhaka Warehouse",
+            "receiverInfo": {
+                "address": "House 11, Road 5, Banani, Dhaka",
+                "receiverId": "USER-0ec87a562fea",
+                "receiverName": "pakhi Hasan",
+                "receiverPhone": "017XXXXXXXX",
+                "receiverEmail": "shuvajitdas838@gmail.com"
+            },
+            "parcelType": "FRAGILE",
+            "weight": 30,
+            "deliveryDate": "2025-08-10T10:00:00.000Z",
+            "parcelStatus": "REQUESTED",
+            "isPaid": false,
+            "coupon": "SUMMER2026",
+            "trackingEvent": [
+                {
+                    "status": {
+                        "parcelStatus": "REQUESTED",
+                        "date": "2025-08-17T02:10:12.426Z"
+                    },
+                    "location": "Dhaka Warehouse",
+                    "note": "This parcel is REQUESTED on 8/17/2025, 8:10:12 AM"
+                }
+            ],
+            "createdAt": "2025-08-17T02:10:12.426Z",
+            "updatedAt": "2025-08-17T02:10:12.426Z",
+            "fee": 2465, // this parcel fee is calculated using coupon
+            "trackingId": "TRK-7F51DF8C823604EF"
+        }
+    ],
+    "message": "Parcel retrieved successfully"
+}
+  </pre>
 
 ### 3. Get Incoming Parcels
 - **Endpoint:** `GET /parcels/incoming`
