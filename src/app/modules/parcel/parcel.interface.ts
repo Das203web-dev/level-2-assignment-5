@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { IUser } from "../user/user.interface";
 
 export enum ParcelType {
@@ -9,13 +10,17 @@ export enum ParcelType {
 export enum ParcelStatus {
     REQUESTED = "REQUESTED",
     APPROVED = "APPROVED",
+    ASSIGNED_TO = "ASSIGNED_TO",
     DISPATCHED = "DISPATCHED",
     IN_TRANSIT = "IN_TRANSIT",
+    SEND_OTP = "SEND_OTP",
+    PARCEL_DELIVERY_NOTIFICATION = "PARCEL_DELIVERY",
     DELIVERED = "DELIVERED",
     CANCELLED = "CANCELLED",
     RETURNED = "RETURNED",
     FAILED = "FAILED",
-    ASSIGNED_TO = "ASSIGNED_TO"
+    FLAG = "FLAG",
+    BLOCKED = "BLOCKED"
 }
 export interface IStatusLog {
     location: string,
@@ -27,9 +32,10 @@ export interface IStatusLog {
 }
 export interface IReceiverType {
     address: string;
-    receiverId?: string;
+    receiverId?: string | null;
     receiverName: string;
     receiverPhone: string;
+    receiverEmail: string
 }
 export interface IDeliveryInfoTypes {
     deliveryPersonInfo: {
@@ -58,9 +64,10 @@ export interface IParcel {
     weight: number;
     deliveryDate: Date;
     parcelStatus: ParcelStatus;
-    fee: number;
+    fee?: number;
     isPaid?: boolean;
     trackingId: string;
     trackingEvent?: IStatusLog[];
-    deliveryInfo?: IDeliveryInfoTypes
+    deliveryInfo?: IDeliveryInfoTypes;
+    coupon?: string
 }

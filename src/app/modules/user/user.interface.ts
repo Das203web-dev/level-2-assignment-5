@@ -5,10 +5,6 @@ export enum Role {
     RECEIVER = "RECEIVER",
     DELIVERY_AGENT = "DELIVERY_AGENT"
 }
-// export interface IUserUpdateByAdmin {
-//     role : string;
-
-// }
 export interface IAuth {
     provider: "google" | "credentials",
     providerId: string
@@ -16,7 +12,7 @@ export interface IAuth {
 export enum UserStatus {
     ACTIVE = "ACTIVE",
     BLOCKED = "BLOCKED",
-    IN_ACTIVE = "IN_ACTIVE"
+    IN_ACTIVE = "IN_ACTIVE",
 }
 export interface IUser {
     _id?: string;

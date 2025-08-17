@@ -1,7 +1,8 @@
+import { ClientSession } from "mongoose";
 import { ParcelStatus } from "../modules/parcel/parcel.interface";
 import { Parcel } from "../modules/parcel/parcel.model";
 
-export const handleParcelStatusUpdate = async (parcelTrackingId: string, status: ParcelStatus, location = "") => {
+export const handleParcelStatusUpdate = async (parcelTrackingId: string, status: ParcelStatus, location = "", session: ClientSession | null = null) => {
     const date = new Date()
     const formatDate = date.toLocaleString("en-BD")
     const note = `This parcel is ${status} on ${formatDate}`
@@ -23,6 +24,6 @@ export const handleParcelStatusUpdate = async (parcelTrackingId: string, status:
         {
             new: true
         }
-    )
+    ).session(session)
     return updatedParcel
 }

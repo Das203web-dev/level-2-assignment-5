@@ -18,7 +18,6 @@ export const userCreateSchema = z.object({
 })
 export const userUpdateSchema = z.object({
     name: z.string({ error: "Name is required" }).min(3, { error: "Name must be more then 3 characters" }).max(40, { error: "Name can't be more then 40 characters" }).optional(),
-    password: z.string().min(6, { error: "Password must be at least 6 characters" }).optional(),
     address: z.string({ error: "Address will be string" }).optional(),
     phone: z.string().optional(),
 })

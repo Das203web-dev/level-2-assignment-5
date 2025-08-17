@@ -35,9 +35,8 @@ const handleUserUpdate = catchAsyncFunction(async (req: Request, res: Response, 
     if (!updatedUserBody) {
         throw new AppError(httpStatus.NOT_FOUND, "The user not found")
     }
-    // console.log(updatedUser, "inside update controller");
     const updateUser = updatedUserBody?.toObject()
-    const { password, ...withoutPassword } = updateUser;
+    const { password, _id, ...withoutPassword } = updateUser;
 
     handleResponse(res, {
         statusCode: httpStatus.OK,
@@ -70,6 +69,30 @@ const handleDeleteUser = catchAsyncFunction(async (req: Request, res: Response, 
         data: null
     })
 })
+const handleBlockUser = catchAsyncFunction(async (req: Request, res: Response, next: NextFunction) => {
+    const token = req.user;
+    const userID = req.params.userId;
+    const blockUserInfo = await userService.blockUser(token as JwtPayload, userID as string)
+    handleResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "User is blocked",
+        data: blockUserInfo
+    })
+})
+const handleUnblockUser = catchAsyncFunction(async (req: Request, res: Response, next: NextFunction) => {
+    const token = req.user;
+    const userID = req.params.userId;
+    const user = await userService.unblockUser(token as JwtPayload, userID as string);
+    const { password, _id, ...userWithoutPassword } = user.toObject()
+    handleResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "User is unblocked",
+        data: userWithoutPassword
+    })
+})
+
 export const UserController = {
-    handleCreateUser, handleGetAllUser, handleUserUpdate, handleUserRoleUpdate, handleDeleteUser
+    handleCreateUser, handleGetAllUser, handleUserUpdate, handleUserRoleUpdate, handleDeleteUser, handleBlockUser, handleUnblockUser
 }

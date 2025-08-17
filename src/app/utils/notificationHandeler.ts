@@ -8,22 +8,19 @@ import { Role } from "../modules/user/user.interface";
 // import { User } from "../modules/user/user.model";
 import httpStatus from "http-status-codes"
 
-export const handleNotification = async (status: ParcelStatus, parcelId: string, recipientId: string): Promise<INotification> => {
+export const handleNotification = async (status: ParcelStatus, parcelId: string, recipientId: string, notificationType: NotificationType, extraData = ""): Promise<INotification> => {
     const findSender = await Parcel.findOne({ trackingId: parcelId }).select("senderId")
-    console.log(findSender);
     if (!findSender) {
         throw new AppError(httpStatus.NOT_FOUND, "Sender is not found")
     }
     const senderId = findSender?.senderId
     let notifications: INotification = {
         recipientId: "",
-        // senderId: "",
         recipientRole: "",
-        // senderRole: "",
         parcelId: "",
         message: "",
         data: null,
-        notificationType: NotificationType.NEW_PARCEL_REQUEST
+        notificationType: notificationType
     };
     switch (status) {
         case ParcelStatus.REQUESTED:
@@ -115,6 +112,35 @@ export const handleNotification = async (status: ParcelStatus, parcelId: string,
                 parcelId: parcelId,
                 message: `This parcel is returned`,
                 notificationType: NotificationType.PARCEL_RETURNED,
+            };
+            break;
+        case ParcelStatus.SEND_OTP:
+            notifications = {
+                recipientId: recipientId,
+                // senderId: senderId,
+                recipientRole: Role.RECEIVER,
+                // senderRole: Role.SENDER,
+                parcelId: parcelId,
+                message: `Your OTP for parcel delivery is ${extraData}`,
+                notificationType: NotificationType.PARCEL_SEND_OTP,
+            }
+            break;
+        case ParcelStatus.FLAG:
+            notifications = {
+                recipientId: senderId,
+                recipientRole: Role.SENDER,
+                parcelId: parcelId,
+                message: `Your parcel is flagged`,
+                notificationType: NotificationType.PARCEL_FLAGGED,
+            }
+            break;
+        case ParcelStatus.BLOCKED:
+            notifications = {
+                recipientId: senderId,
+                recipientRole: Role.SENDER,
+                parcelId: parcelId,
+                message: `Your parcel is Blocked due to some reason`,
+                notificationType: NotificationType.PARCEL_BLOCKED
             }
     }
     return await Notification.create(notifications)

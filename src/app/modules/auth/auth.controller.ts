@@ -15,10 +15,15 @@ const handleUserLogin = catchAsyncFunction(async (req: Request, res: Response, n
             return next(err)
         }
         if (!user) {
-            throw new AppError(httpStatus.NOT_FOUND, info.message)
+            return handleResponse(res, {
+                statusCode: httpStatus.UNAUTHORIZED,
+                success: false,
+                message: info?.message || "Invalid credentials",
+                data: null
+            });
         }
         delete user.toObject().password;
-        const { password, ...userWithoutPassword } = user.toObject()
+        const { password, _id, ...userWithoutPassword } = user.toObject()
         const userToken = getJwtToken(userWithoutPassword);
         setTokenIntoCookies(res, userToken)
         handleResponse(res, {
@@ -74,14 +79,6 @@ const handleResetPassword = catchAsyncFunction(async (req: Request, res: Respons
         data: true
     })
 })
-// const handleGoogleLogin = catchAsyncFunction(async (req: Request, res: Response, next: NextFunction) => {
-//     const redirectTo = req.query.redirect ? req.query.redirect : "";
-//     console.log(redirectTo);
-//     // if(redirectTo.startsWith("/")){
-
-//     // }
-
-// })
 export const AuthController = {
     handleUserLogin, handleGetNewTokenUsingRefreshToken, handleResetPassword, handleUserLogout
 }

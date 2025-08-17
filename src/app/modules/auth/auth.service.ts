@@ -14,7 +14,7 @@ const createNewTokenUsingRefreshToken = async (refreshToken: string) => {
     }
 }
 const resetPassword = async (oldPassword: string, newPassword: string, token: JwtPayload) => {
-    if (!token && !oldPassword && !newPassword) {
+    if (!token || !oldPassword || !newPassword) {
         throw new AppError(httpStatus.BAD_REQUEST, `Sorry something went wrong`)
     }
     const findUser = await User.findOne({ userId: token.userId });

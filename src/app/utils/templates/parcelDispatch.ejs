@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parcel Dispatch Note</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7f9fc;
+            color: #333;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        .info-item p {
+            margin: 5px 0;
+            font-size: 15px;
+        }
+
+        .info-item strong {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .highlight {
+            color: #2980b9;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Parcel Dispatch Note</h1>
+            <p><strong>Parcel Name:</strong> <span class="highlight">
+                    <%= parcel_name %>
+                </span></p>
+            <p><strong>Dispatch Date:</strong> <span class="highlight">
+                    <%= new Date(deliveryInfo.dispatchDate).toLocaleString() %>
+                </span></p>
+        </div>
+
+        <div class="section">
+            <h2>Sender Information</h2>
+            <div class="info-item">
+                <p><strong>Sender ID:</strong> <span>
+                        <%= senderId %>
+                    </span></p>
+                <p><strong>Sender Address:</strong> <span>
+                        <%= senderAddress %>
+                    </span></p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Recipient Information</h2>
+            <div class="info-item">
+                <p><strong>Name:</strong> <span>
+                        <%= receiverInfo.receiverName %>
+                    </span></p>
+                <p><strong>Email:</strong> <span>
+                        <%= receiverInfo.receiverEmail %>
+                    </span></p>
+                <p><strong>Phone:</strong> <span>
+                        <%= receiverInfo.receiverPhone %>
+                    </span></p>
+                <p><strong>Address:</strong> <span>
+                        <%= receiverInfo.address %>
+                    </span></p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Delivery Details</h2>
+            <div class="info-item">
+                <p><strong>Delivery Person:</strong> <span>
+                        <%= deliveryInfo.deliveryPersonName %>
+                    </span></p>
+                <p><strong>Delivery Person Email:</strong> <span>
+                        <%= deliveryInfo.deliveryPersonEmail %>
+                    </span></p>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

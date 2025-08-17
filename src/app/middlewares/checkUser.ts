@@ -8,14 +8,11 @@ import { Role, UserStatus } from "../modules/user/user.interface";
 export const checkUserRole = (...allowedRoles: string[]) => async (req: Request, res: Response, next: NextFunction) => {
     try {
         const accessToken = req.cookies.accessToken;
-        // console.log(accessToken, "from checkrole line 11");
         if (!accessToken) {
             throw new Error("No token found")
         }
         const verifyToken = jwtVerify(accessToken, envVariables.JWT_SECRET) as JwtPayload
-        // console.log(verifyToken, "from checkrole line 16")
         const findUser = await User.findOne({ email: verifyToken.email })
-        // console.log(findUser, "From check role");
         if (!findUser) {
             throw new Error("User is not found")
         }

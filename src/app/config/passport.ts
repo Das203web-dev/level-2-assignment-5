@@ -15,49 +15,17 @@ passport.use(
     }, async (email: string, password: string, done: any) => {
         const isUserExist = await User.findOne({ email })
         if (!isUserExist) {
-            return done("User is not exist")
+            return done(null, false, { message: "User does not exist" });
         }
-        const isUserAuthenticateUsingGoogle = await isUserExist.auths.some(auth => auth.provider === "google");
+        const isUserAuthenticateUsingGoogle = isUserExist.auths.some(auth => auth.provider === "google");
         if (isUserAuthenticateUsingGoogle) {
             return done("You have authenticate using google. So log in using google or create a password to login using email and password")
         }
         const matchPassword = await bcrypt.compare(password as string, isUserExist.password as string);
         if (!matchPassword) {
-            return done("Password does not match")
+            return done(null, false, { message: "Password does not match" })
         }
         return done(null, isUserExist)
-    })
-)
-// for google login 
-passport.use(
-    new GoogleStrategy({
-        clientID: envVariables.GOOGLE_CLIENT_ID,
-        clientSecret: envVariables.GOOGLE_CLIENT_SECRET,
-        callbackURL: envVariables.GOOGLE_CALLBACK
-    }, async (accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback) => {
-        try {
-            const email = profile.emails?.[0].value;
-            // console.log(email, "inside passport google");
-            if (!email) {
-                return done(null, false, { message: "No email found" })
-            }
-            let user = await User.findOne({ email });
-            if (!user) {
-                user = await User.create({
-                    name: profile?.displayName,
-                    email: profile.emails?.[0].value,
-                    isVerified: true,
-                    role: Role.SENDER,
-                    auths: [{
-                        provider: profile.provider,
-                        providerId: profile.id
-                    }]
-                })
-            }
-            return done(null, user)
-        } catch (error) {
-            return done(error)
-        }
     })
 )
 
@@ -73,3 +41,37 @@ passport.deserializeUser(async (id: any, done: any) => {
         done(error)
     }
 })
+
+
+// for google login
+// passport.use(
+//     new GoogleStrategy({
+//         clientID: envVariables.GOOGLE_CLIENT_ID,
+//         clientSecret: envVariables.GOOGLE_CLIENT_SECRET,
+//         callbackURL: envVariables.GOOGLE_CALLBACK
+//     }, async (accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback) => {
+//         try {
+//             const email = profile.emails?.[0].value;
+//             // console.log(email, "inside passport google");
+//             if (!email) {
+//                 return done(null, false, { message: "No email found" })
+//             }
+//             let user = await User.findOne({ email });
+//             if (!user) {
+//                 user = await User.create({
+//                     name: profile?.displayName,
+//                     email: profile.emails?.[0].value,
+//                     isVerified: true,
+//                     role: Role.SENDER,
+//                     auths: [{
+//                         provider: profile.provider,
+//                         providerId: profile.id
+//                     }]
+//                 })
+//             }
+//             return done(null, user)
+//         } catch (error) {
+//             return done(error)
+//         }
+//     })
+// )
