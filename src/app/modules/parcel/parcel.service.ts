@@ -169,11 +169,8 @@ const dispatchParcel = async (token: JwtPayload, parcelId: string) => {
                 templateName: "parcelDispatch",
                 templateData: emailBody
             })
-        } catch (error) {
-            throw new AppError(
-                httpStatus.BAD_REQUEST,
-                `Email sending failed: ${error?.message || "Unknown error"}`
-            );
+        } catch (error: any) {
+            throw new AppError(httpStatus.BAD_REQUEST, "Email sending failed")
         }
         parcel.parcelStatus = parcelDispatched?.parcelStatus;
         await parcel.save()
