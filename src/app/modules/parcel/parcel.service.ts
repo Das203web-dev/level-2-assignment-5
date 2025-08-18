@@ -170,8 +170,10 @@ const dispatchParcel = async (token: JwtPayload, parcelId: string) => {
                 templateData: emailBody
             })
         } catch (error) {
-            console.error("Email sending failed in production:", error);
-            throw new AppError(httpStatus.BAD_REQUEST, "Something went wrong in the email.")
+            throw new AppError(
+                httpStatus.BAD_REQUEST,
+                `Email sending failed: ${error?.message || "Unknown error"}`
+            );
         }
         parcel.parcelStatus = parcelDispatched?.parcelStatus;
         await parcel.save()
