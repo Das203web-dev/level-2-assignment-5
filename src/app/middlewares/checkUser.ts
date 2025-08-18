@@ -3,7 +3,7 @@ import { jwtVerify } from "../utils/authUtils";
 import { envVariables } from "../config/env";
 import { JwtPayload } from "jsonwebtoken";
 import { User } from "../modules/user/user.model";
-import { Role, UserStatus } from "../modules/user/user.interface";
+import { UserStatus } from "../modules/user/user.interface";
 
 export const checkUserRole = (...allowedRoles: string[]) => async (req: Request, res: Response, next: NextFunction) => {
     try {

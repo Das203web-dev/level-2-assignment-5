@@ -1,4 +1,4 @@
-import { model, now, Schema } from "mongoose";
+import { model, Schema } from "mongoose";
 import { IDeliveryInfoTypes, IParcel, IReceiverType, IStatusLog, ParcelStatus, ParcelType } from "./parcel.interface";
 import * as crypto from "crypto";
 import { Role } from "../user/user.interface";
@@ -6,7 +6,6 @@ import { feeCalculation } from "../../utils/feeCalculation";
 import AppError from "../../errorHelpers/AppError";
 import httpStatus from "http-status-codes"
 import { Coupon } from "../coupon/coupon.model";
-import { ICoupon } from "../coupon/coupon.interface";
 
 
 const receiverSchema = new Schema<IReceiverType>({

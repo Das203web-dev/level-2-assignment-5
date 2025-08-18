@@ -1,5 +1,5 @@
 import AppError from "../errorHelpers/AppError";
-import { IDeliveryInfoTypes, IParcel, ParcelStatus } from "../modules/parcel/parcel.interface";
+import { IDeliveryInfoTypes, ParcelStatus } from "../modules/parcel/parcel.interface";
 import { Parcel } from "../modules/parcel/parcel.model";
 import { IUser, Role } from "../modules/user/user.interface";
 import { User } from "../modules/user/user.model";
@@ -7,7 +7,6 @@ import httpStatus from "http-status-codes";
 import { handleNotification } from "../utils/notificationHandeler";
 import { JwtPayload } from "jsonwebtoken";
 import { NotificationType } from "../modules/notification/notification.interface";
-import { IOtp } from "../modules/otp/otp.interface";
 import { OTP } from "../modules/otp/otp.model";
 import { sendOTPEmail } from "../utils/sendOTPemail";
 import { ClientSession } from "mongoose";

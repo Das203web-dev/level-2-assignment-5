@@ -4,9 +4,7 @@ import { ParcelServices } from "./parcel.service";
 import { handleResponse } from "../../utils/handleResponse";
 import httpStatus from "http-status-codes"
 import { JwtPayload } from "jsonwebtoken";
-import { Role } from "../user/user.interface";
-import { IParcel, ParcelStatus } from "./parcel.interface";
-import AppError from "../../errorHelpers/AppError";
+import { IParcel } from "./parcel.interface";
 
 const handleCreateParcel = catchAsyncFunction(async (req: Request, res: Response, next: NextFunction) => {
     const parcelBody = req.body;
@@ -96,11 +94,8 @@ const handleSendOTP = catchAsyncFunction(async (req: Request, res: Response, nex
 const handleVerifyOTP = catchAsyncFunction(async (req: Request, res: Response, next: NextFunction) => {
     const token = req.user;
     const parcel = req.params.id;
-    // console.log(parcel, "from control");
     const otp = req.body;
-    // console.log(token, parcel, otp);
     const verifyOTP = await ParcelServices.confirmParcel(token as JwtPayload, parcel as string, otp.otp as number)
-    // console.log(verifyOTP, "inside verify controller");
     handleResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -164,7 +159,7 @@ const handlePublicTracking = catchAsyncFunction(async (req: Request, res: Respon
 const handleParcelDelete = catchAsyncFunction(async (req: Request, res: Response, next: NextFunction) => {
     const token = req.user;
     const parcelId = req.params.id;
-    await ParcelServices.deleteParcel(parcelId as string);
+    await ParcelServices.deleteParcel(parcelId as string, token as JwtPayload);
     handleResponse(res, {
         statusCode: httpStatus.OK,
         success: true,

@@ -1,4 +1,4 @@
-import { IParcel, ParcelStatus } from "../parcel/parcel.interface";
+import { IParcel } from "../parcel/parcel.interface";
 import { Role } from "../user/user.interface";
 
 

@@ -29,6 +29,7 @@ const registerUser = async (payload: Partial<IUser>) => {
         ...rest
     })
     const userObject = user.toObject()
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     const { password: userPassword, _id, ...withoutPassword } = userObject;
     // await user.save()
     return withoutPassword
@@ -65,12 +66,12 @@ const updateUserRole = async (token: JwtPayload, userId: string, payload: Partia
     }
     if (payload.role === Role.ADMIN) {
         const findIsAdminAlreadyExist = await User.findOne({ role: Role.ADMIN });
-        console.log(findIsAdminAlreadyExist);
         if (!findIsAdminAlreadyExist) {
             const updateUser = await User.findOneAndUpdate({ userId }, payload, { new: true });
             if (!updateUser) {
                 throw new AppError(httpStatus.BAD_REQUEST, "User not found")
             }
+            /* eslint-disable @typescript-eslint/no-unused-vars */
             const { password, _id, ...updatedUserWithoutPassword } = updateUser.toObject()
             return updatedUserWithoutPassword
         } else {
@@ -112,6 +113,7 @@ const blockUser = async (token: JwtPayload, userId: string) => {
     if (!updatedUser) {
         throw new AppError(httpStatus.NOT_FOUND, "User not found")
     }
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     const { password, _id, ...userWithoutPassword } = updatedUser.toObject()
 
     return userWithoutPassword
@@ -130,7 +132,6 @@ const unblockUser = async (token: JwtPayload, userId: string) => {
     }
     findUser.userStatus = UserStatus.ACTIVE;
     await findUser.save()
-    console.log(findUser);
     return findUser
 }
 export const userService = { registerUser, getAllUser, updateUser, updateUserRole, deleteUser, blockUser, unblockUser }

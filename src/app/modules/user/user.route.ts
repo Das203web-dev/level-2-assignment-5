@@ -4,7 +4,6 @@ import { validationRequest } from "../../middlewares/validation";
 import { userCreateSchema, userUpdateSchema } from "./user.validation";
 import { checkUserRole } from "../../middlewares/checkUser";
 import { Role } from "./user.interface";
-import { userService } from "./user.service";
 
 const route = Router();
 route.get("/all", checkUserRole(Role.ADMIN, Role.SUPER_ADMIN), UserController.handleGetAllUser)

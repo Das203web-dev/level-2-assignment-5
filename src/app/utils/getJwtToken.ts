@@ -17,7 +17,6 @@ export const getJwtToken = (user: Partial<IUser>) => {
     }
 }
 export const getNewTokenUsingRefreshToken = async (refreshToken: string) => {
-    console.log(refreshToken);
     const verifyRefreshToken = jwtVerify(refreshToken, envVariables.JWT_REFRESH_SECRET) as JwtPayload
     if (!verifyRefreshToken) {
         throw new Error("Refresh token verification failed")

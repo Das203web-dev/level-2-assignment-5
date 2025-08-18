@@ -1,4 +1,5 @@
 import { envVariables } from "../config/env"
+import AppError from "../errorHelpers/AppError";
 import { IAuth, Role } from "../modules/user/user.interface";
 import { User } from "../modules/user/user.model"
 import bcrypt from "bcryptjs"
@@ -23,7 +24,8 @@ export const seedAdmin = async () => {
             isVerified: true
         }
         await User.create(superAdmin)
+        /* eslint-disable @typescript-eslint/no-unused-vars */
     } catch (error) {
-        console.log(error);
+        throw new AppError(500, "Supper admin creation problem");
     }
 }

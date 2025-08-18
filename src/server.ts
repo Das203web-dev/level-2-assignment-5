@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import app from "./app";
 import { envVariables } from "./app/config/env";
 import { seedAdmin } from "./app/utils/seedAdmin";
-import { error } from "console";
 let server: Server;
 const serverConnect = async () => {
 

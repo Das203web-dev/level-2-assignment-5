@@ -6,7 +6,6 @@ import { getJwtToken } from "../../utils/getJwtToken";
 import httpStatus from "http-status-codes";
 import { setTokenIntoCookies } from "../../utils/setToken";
 import { AuthService } from "./auth.service";
-import AppError from "../../errorHelpers/AppError";
 import { JwtPayload } from "jsonwebtoken";
 
 const handleUserLogin = catchAsyncFunction(async (req: Request, res: Response, next: NextFunction) => {
@@ -23,6 +22,7 @@ const handleUserLogin = catchAsyncFunction(async (req: Request, res: Response, n
             });
         }
         delete user.toObject().password;
+        /* eslint-disable @typescript-eslint/no-unused-vars */
         const { password, _id, ...userWithoutPassword } = user.toObject()
         const userToken = getJwtToken(userWithoutPassword);
         setTokenIntoCookies(res, userToken)

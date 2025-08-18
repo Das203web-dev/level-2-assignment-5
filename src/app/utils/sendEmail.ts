@@ -27,7 +27,7 @@ export const sendEmail = async ({ emailTo, subject, attachments, templateName, t
     try {
         const templatePath = path.join(__dirname, `templates/${templateName}.ejs`);
         const html = await ejs.renderFile(templatePath, templateData)
-        const info = await transporter.sendMail({
+        await transporter.sendMail({
             from: envVariables.EMAIL_SENDER.SMTP_USER_EMAIL,
             to: emailTo,
             subject: subject,
@@ -39,8 +39,6 @@ export const sendEmail = async ({ emailTo, subject, attachments, templateName, t
             html: html
         })
     } catch (error: any) {
-        console.error("Nodemailer failed to send email:", error); // Log the real error
-
-        throw new AppError(500, `${error.message}`)
+        console.error("Nodemailer failed to send email:", error); throw new AppError(500, `${error.message}`)
     }
 }

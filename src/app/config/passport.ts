@@ -1,11 +1,7 @@
 import passport from "passport";
-import { envVariables } from "./env";
-import { Strategy as GoogleStrategy, VerifyCallback, Profile } from "passport-google-oauth20";
 import { User } from "../modules/user/user.model";
 import { Strategy as LocalStrategy } from "passport-local";
-// import { Request, Response } from "express";
 import bcrypt from "bcryptjs"
-import { Role } from "../modules/user/user.interface";
 
 // for local login using pass 
 passport.use(
@@ -32,7 +28,6 @@ passport.use(
 passport.serializeUser((user: any, done: (err: any, id?: unknown) => void) => {
     done(null, user._id)
 })
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 passport.deserializeUser(async (id: any, done: any) => {
     try {
         const user = await User.findById(id)

@@ -7,7 +7,6 @@ import bcrypt from "bcryptjs"
 import { envVariables } from "../../config/env";
 
 const createNewTokenUsingRefreshToken = async (refreshToken: string) => {
-    console.log(refreshToken);
     const accessToken = await getNewTokenUsingRefreshToken(refreshToken);
     return {
         accessToken: accessToken

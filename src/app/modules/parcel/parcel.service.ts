@@ -36,6 +36,7 @@ const createParcel = async (payload: Partial<IParcel>, token: JwtPayload) => {
     if (createParcel.parcelStatus === ParcelStatus.REQUESTED) {
         await notifyAdmin(ParcelStatus.REQUESTED, createParcel.trackingId, NotificationType.NEW_PARCEL_REQUEST)
     }
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     const { _id, ...parcel } = createParcel.toObject()
     return parcel
 }
@@ -98,7 +99,6 @@ const allParcels = async (token: JwtPayload, parcelStatus?: string) => {
 };
 
 const approvedParcel = async (parcelId: string, token: JwtPayload, deliveryManID: string) => {
-    console.log(deliveryManID, "from approved ");
     if (!deliveryManID) {
         throw new AppError(httpStatus.BAD_REQUEST, "You must have to provide delivery man")
     }
@@ -280,14 +280,12 @@ const confirmParcel = async (token: JwtPayload, parcelID: string, otp: number) =
     throw new AppError(httpStatus.FORBIDDEN, "You are not permitted to confirm this delivery");
 };
 
-const deleteParcel = async (parcelId: string) => {
+const deleteParcel = async (parcelId: string, token: JwtPayload) => {
     const findParcel = await checkParcelExistence(parcelId);
-    console.log(findParcel);
     if (findParcel.parcelStatus !== ParcelStatus.REQUESTED) {
         throw new AppError(httpStatus.BAD_REQUEST, `Sorry parcel with this ${findParcel.parcelStatus} can not be deleted`)
     }
-    const parcel = await Parcel.findOneAndDelete({ trackingId: findParcel.trackingId });
-    console.log(parcel);
+    const parcel = await Parcel.findOneAndDelete({ trackingId: findParcel.trackingId, senderId: token.userId });
     if (!parcel) {
         throw new AppError(httpStatus.BAD_REQUEST, "Something wrong")
     }

@@ -1,7 +1,5 @@
 import { model, Schema } from "mongoose";
 import { IOtp } from "./otp.interface";
-import { required } from "zod/v4/core/util.cjs";
-import { number } from "zod";
 
 const otpSchema = new Schema<IOtp>({
     userId: {
