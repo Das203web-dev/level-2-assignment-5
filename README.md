@@ -281,7 +281,7 @@ The system uses Passport.js with authentication strategies:
     "stack": "Error: Permission not granted\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:23:19\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
   </pre>
   
-## ( note : This is for admin role access EMAIL : example@gmail.com , PASSWORD : example )
+## ( note : This is for admin role access EMAIL : example@gmail.com , PASSWORD : example and status is 200 )
 
 ### 3. Update User Profile
 - **Endpoint:** `PATCH /api/user/update`
@@ -314,6 +314,8 @@ The system uses Passport.js with authentication strategies:
     },
     "message": "User updated successfully"}
   </pre>
+  
+## ( note : status is 200 )
 
 ### 4. Update User Role
 - **Endpoint:** `PATCH /api/user/update/role/:id`
@@ -359,6 +361,9 @@ The system uses Passport.js with authentication strategies:
     },
     "message": "User updated successfully"}
 </pre>
+
+## ( note : status is 200 )
+
 ### 5. Delete User
 - **Endpoint:** `DELETE /api/user/delete/:id`
 - **Purpose:** Permanently removes user from the system
@@ -380,6 +385,7 @@ The system uses Passport.js with authentication strategies:
     "err": "You are not permitted to delete a SUPER_ADMIN",
     "stack": "Error: You are not permitted to delete a SUPER_ADMIN\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\user\\user.service.ts:92:19\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\user\\user.service.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
   </pre>
+## ( note : status is 200 )
 
 ### 6. Block User
 - **Endpoint:** `POST /api/user/block/:userId`
@@ -427,6 +433,7 @@ The system uses Passport.js with authentication strategies:
     "message": "User is blocked"
 }
   </pre>
+## ( note : status is 200 )
 
 ### 7. Unblock User
 - **Endpoint:** `POST /api/user/unblock/:userId`
@@ -464,6 +471,7 @@ The system uses Passport.js with authentication strategies:
     },
     "message": "User is unblocked"}
   </pre>
+## ( note : status is 200 )
 
 ## User Features
 - **Password Security:** Bcrypt hashing with configurable salt rounds
@@ -547,6 +555,7 @@ The system uses Passport.js with authentication strategies:
     "err": "Permission not granted",
     "stack": "Error: Permission not granted\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:20:19\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
 </pre>
+## ( note : status is 200 )
 
 ### 2. Get All Parcels
 - **Endpoint:** `GET /api/parcel/all-parcel`
@@ -632,6 +641,7 @@ The system uses Passport.js with authentication strategies:
   "message": "Parcel created successfully"
 }
 ```
+## ( note : status is 200 )
 
 ### GET ALL PARCELS USING FILTER
 - **Endpoint:** `GET /api/parcel/all-parcel?filter=DELIVERED`
@@ -731,6 +741,7 @@ The system uses Passport.js with authentication strategies:
     "stack": "Error: Sorry no parcels found\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\parcel\\parcel.service.ts:302:15\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\parcel\\parcel.service.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"
 }
   </pre>
+## ( note : status is 200 )
 
 ### 4. Get Parcel History
 - **Endpoint:** `GET /api/parcel/history`
@@ -787,6 +798,7 @@ The system uses Passport.js with authentication strategies:
     "stack": "Error: No parcel found\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\parcel\\parcel.service.ts:313:15\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\modules\\parcel\\parcel.service.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"
 }
   </pre>
+## ( note : status is 200 )
 
 ### 5. Cancel Parcel
 - **Endpoint:** `PATCH /api/parcel/cancel/:id`
@@ -852,6 +864,7 @@ The system uses Passport.js with authentication strategies:
     "message": "Parcel Cancelled successfully"
 }
   </pre>
+## ( note : status is 200 )
 
 ### 6. Flag Parcel
 - **Endpoint:** `PATCH /api/parcel/flagged/:id`
@@ -907,6 +920,7 @@ The system uses Passport.js with authentication strategies:
     "message": "This parcel is flagged"
 }
   </pre>
+## ( note : status is 200 )
 
 ### 7. Block Parcel
 - **Endpoint:** `PATCH /api/parcel/blocked/:id`
@@ -963,6 +977,8 @@ The system uses Passport.js with authentication strategies:
     "message": "This parcel is blocked"
 }
   </pre>
+  ## ( note : status is 200 )
+
 ### 8. Approve Parcel
 - **Endpoint:** `PATCH /api/parcel/approved/:trackingID`
 - **Purpose:** Approves parcel and assigns delivery agent
@@ -1099,6 +1115,7 @@ The system uses Passport.js with authentication strategies:
     "message": "Parcel dispatched"
 }
   </pre>
+## ( note : status is 200 )
 
 ### 10. Set In Transit
 - **Endpoint:** `PATCH /api/parcel/in_transit/:id`
@@ -1187,6 +1204,7 @@ The system uses Passport.js with authentication strategies:
     "message": "Parcel in IN_TRANSIT"
 }
   </pre>
+## ( note : status is 200 )
 
 ### 11. Send OTP
 - **Endpoint:** `PATCH /api/parcel/otp/send/:id`
@@ -1283,6 +1301,7 @@ The system uses Passport.js with authentication strategies:
     "message": "OTP is send"
 }
   </pre>
+## ( note : status is 200 )
 
 ### 12. Verify OTP
 - **Endpoint:** `PATCH /api/parcel/otp/verify/:id`
@@ -1441,6 +1460,8 @@ For successfull response
     "message": "OTP is verified"
 }
 ```
+## ( note : status is 200 )
+
 ### 13. Public Parcel Tracking
 - **Endpoint:** `GET /api/parcel/track/:id`  
 - **Purpose:** Retrieve public tracking details of a parcel  
@@ -1514,6 +1535,8 @@ For successfull response
   </pre>
 
 ---
+## ( note : status is 200 )
+
 
 ### 14. Delete Parcel
 - **Endpoint:** `DELETE /api/parcel/delete/:id`  
@@ -1530,6 +1553,7 @@ For successfull response
     "message": "Parcel deleted"}
   </pre>
 
+## ( note : status is 200 )
 
 ## Strict Parcel Status Flow
 ```
