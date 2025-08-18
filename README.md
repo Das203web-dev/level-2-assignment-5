@@ -1,5 +1,7 @@
 # Parcel Delivery System API Documentation
 
+## Live link : https://level-2-assignment-5.onrender.com
+
 ## Overview
 This document explains all APIs available in the complete parcel delivery system with authentication, user management, parcel tracking, notifications, and OTP verification.
 
@@ -57,7 +59,7 @@ http://localhost:5000
 * **Utilities:** dotenv, cors, cookie-parser, http-status-codes
 
 
-## Base API : http://localhost:5000/api
+## Base API :  Localhost : http://localhost:5000/api and for live link : https://level-2-assignment-5.onrender.com
 # Authentication API Documentation
 
 ## Authentication Strategy
