@@ -59,7 +59,7 @@ http://localhost:5000
 * **Utilities:** dotenv, cors, cookie-parser, http-status-codes
 
 
-## Base API :  Localhost : http://localhost:5000/api and for live link : https://level-2-assignment-5.onrender.com
+## Base API :  Localhost : http://localhost:5000/api and for live link : https://level-2-assignment-5.onrender.com/api
 # Authentication API Documentation
 
 ## Authentication Strategy
