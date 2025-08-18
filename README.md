@@ -59,7 +59,7 @@ http://localhost:5000
 * **Utilities:** dotenv, cors, cookie-parser, http-status-codes
 
 
-## Base API :  Localhost : http://localhost:5000/api and for live link : https://level-2-assignment-5.onrender.com/api
+## Base API :  Localhost : http://localhost:5000 and for live link : https://level-2-assignment-5.onrender.com
 # Authentication API Documentation
 
 ## Authentication Strategy
@@ -69,7 +69,7 @@ The system uses Passport.js with authentication strategies:
 ## Authentication APIs
 
 ### 1. User Login
-- **Endpoint:** `POST /auth/login`
+- **Endpoint:** `POST /api/auth/login`
 - **Purpose:** Authenticates user credentials and returns access/refresh tokens
 - **Description:** Validates user login using email/password via passport local strategy. Checks if user exists, verifies password
   <pre>
@@ -106,7 +106,7 @@ The system uses Passport.js with authentication strategies:
 ## ( note : the system will generate a userId automatically for future use and status is 200 for this response)  
 
 ### 2. User Logout
-- **Endpoint:** `POST /auth/logout`
+- **Endpoint:** `POST /api/auth/logout`
 - **Purpose:** Logs out the user by clearing authentication cookies
 - **Description:** Removes accessToken and refreshToken cookies from the client browser
 - <pre>
@@ -120,7 +120,7 @@ The system uses Passport.js with authentication strategies:
 ## ( note : The status is 200 )
 
 ### 3. Refresh Token
-- **Endpoint:** `POST /auth/refresh-token`
+- **Endpoint:** `POST /api/auth/refresh-token`
 - **Purpose:** Generates a new access token using the refresh token
 - **Description:** Creates a new access token when the current one expires, using the stored refresh token
   <pre>
@@ -135,7 +135,7 @@ The system uses Passport.js with authentication strategies:
 ## ( note : status is 200 )
 
 ### 4. Reset Password
-- **Endpoint:** `POST /auth/reset-password`
+- **Endpoint:** `POST /api/auth/reset-password`
 - **Purpose:** Allows authenticated users to change their password
 - **Description:** Updates user password by verifying the old password and replacing it with a new hashed password
 - **Authorization:** Requires user authentication (all roles)
@@ -166,7 +166,7 @@ The system uses Passport.js with authentication strategies:
 ## User Management APIs
 
 ### 1. Register User
-- **Endpoint:** `POST /user/register`
+- **Endpoint:** `POST /api/user/register`
 - **Purpose:** Creates a new user account
 - **Description:** Registers a new user with name, email, and password. Automatically generates unique userId and hashes password with bcrypt and another thing user has to select their role also while registering ( e.g : As a RECEIVER,SENDER,DELIVERY_AGENT )
 - **Authorization:** Public endpoint
@@ -226,7 +226,7 @@ The system uses Passport.js with authentication strategies:
   ## ( note : status is 200 and the response is coming without the password field for better security )
 
 ### 2. Get All Users
-- **Endpoint:** `GET /user/all`
+- **Endpoint:** `GET /api/user/all`
 - **Purpose:** Retrieves list of all users in the system
 - **Description:** Returns all users without password field, accessible only to administrators
 - **Authorization:** ADMIN or SUPER_ADMIN roles required
@@ -284,7 +284,7 @@ The system uses Passport.js with authentication strategies:
 ## ( note : This is for admin role access EMAIL : example@gmail.com , PASSWORD : example )
 
 ### 3. Update User Profile
-- **Endpoint:** `PATCH /user/update`
+- **Endpoint:** `PATCH /api/user/update`
 - **Purpose:** Updates current user's profile information
 - **Description:** Allows users to update their name, address, and phone. Restricted fields like email, role, and userStatus cannot be modified
 - **Authorization:** All authenticated users (ADMIN, DELIVERY_AGENT, RECEIVER, SENDER)
@@ -316,7 +316,7 @@ The system uses Passport.js with authentication strategies:
   </pre>
 
 ### 4. Update User Role
-- **Endpoint:** `PATCH /user/update/role/:id`
+- **Endpoint:** `PATCH /api/user/update/role/:id`
 - **Purpose:** Updates user role and permissions
 - **Description:** Allows SUPER_ADMIN to change user roles. Prevents multiple ADMIN users and restricts field modifications
 - **Authorization:** SUPER_ADMIN role required
@@ -360,7 +360,7 @@ The system uses Passport.js with authentication strategies:
     "message": "User updated successfully"}
 </pre>
 ### 5. Delete User
-- **Endpoint:** `DELETE /user/delete/:id`
+- **Endpoint:** `DELETE /api/user/delete/:id`
 - **Purpose:** Permanently removes user from the system
 - **Description:** Deletes user account with role-based restrictions. SUPER_ADMIN can delete any user except other SUPER_ADMINs and ADMIN also can delete other users except SUPER_ADMIN
 - **Authorization:** SUPER_ADMIN or ADMIN roles required
@@ -382,7 +382,7 @@ The system uses Passport.js with authentication strategies:
   </pre>
 
 ### 6. Block User
-- **Endpoint:** `POST /user/block/:userId`
+- **Endpoint:** `POST /api/user/block/:userId`
 - **Purpose:** Blocks user account to prevent access
 - **Description:** Sets user status to BLOCKED, preventing them from accessing the system
 - **Authorization:** ADMIN or SUPER_ADMIN roles required
@@ -429,7 +429,7 @@ The system uses Passport.js with authentication strategies:
   </pre>
 
 ### 7. Unblock User
-- **Endpoint:** `POST /user/unblock/:userId`
+- **Endpoint:** `POST /api/user/unblock/:userId`
 - **Purpose:** Unblocks previously blocked user account
 - **Description:** Changes user status from BLOCKED to ACTIVE, restoring system access
 - **Authorization:** ADMIN or SUPER_ADMIN roles required
@@ -487,7 +487,7 @@ The system uses Passport.js with authentication strategies:
 ## Parcel Management APIs
 
 ### 1. Create Parcel
-- **Endpoint:** `POST /parcel/create`
+- **Endpoint:** `POST /api/parcel/create`
 - **Purpose:** Creates a new parcel delivery request
 - **Description:** Allows senders to create parcel delivery requests with receiver information, weight, type, and delivery details. Auto-generates tracking ID and calculates fees. **Automatically notifies admins** about new parcel requests
 - **Authorization:** SENDER role required
@@ -549,7 +549,7 @@ The system uses Passport.js with authentication strategies:
 </pre>
 
 ### 2. Get All Parcels
-- **Endpoint:** `GET /parcel/all-parcel`
+- **Endpoint:** `GET /api/parcel/all-parcel`
 - **Purpose:** Retrieves parcels based on user role and optional status filter
 - **Description:** Returns parcels filtered by user role - admins see all, senders see their sent parcels, receivers see incoming parcels
 - **Authorization:** ADMIN, SENDER, RECEIVER, SUPER_ADMIN roles
@@ -634,7 +634,7 @@ The system uses Passport.js with authentication strategies:
 ```
 
 ### GET ALL PARCELS USING FILTER
-- **Endpoint:** `GET /parcel/all-parcel?filter=DELIVERED`
+- **Endpoint:** `GET /api/parcel/all-parcel?filter=DELIVERED`
 
 ```json
 {
@@ -679,7 +679,7 @@ The system uses Passport.js with authentication strategies:
 ```
 
 ### 3. Get Incoming Parcels
-- **Endpoint:** `GET /parcel/incoming`
+- **Endpoint:** `GET /api/parcel/incoming`
 - **Purpose:** Shows all parcels coming to the receiver
 - **Description:** Returns parcels addressed to the authenticated receiver that are not yet delivered or cancelled
 - **Authorization:** RECEIVER role required
@@ -733,7 +733,7 @@ The system uses Passport.js with authentication strategies:
   </pre>
 
 ### 4. Get Parcel History
-- **Endpoint:** `GET /parcel/history`
+- **Endpoint:** `GET /api/parcel/history`
 - **Purpose:** Shows delivered parcel history for receiver
 - **Description:** Returns all successfully delivered parcels for the authenticated receiver
 - **Authorization:** RECEIVER role required
@@ -789,7 +789,7 @@ The system uses Passport.js with authentication strategies:
   </pre>
 
 ### 5. Cancel Parcel
-- **Endpoint:** `PATCH /parcel/cancel/:id`
+- **Endpoint:** `PATCH /api/parcel/cancel/:id`
 - **Purpose:** Cancel a parcel request or delivery
 - **Description:** Allows senders to cancel their own parcels or admins to cancel any parcel in cancellable status. **Automatically sends notifications** to sender and admins
 - **Authorization:** ADMIN or SENDER roles required
@@ -854,7 +854,7 @@ The system uses Passport.js with authentication strategies:
   </pre>
 
 ### 6. Flag Parcel
-- **Endpoint:** `PATCH /parcel/flagged/:id`
+- **Endpoint:** `PATCH /api/parcel/flagged/:id`
 - **Purpose:** Flags a parcel for administrative review
 - **Description:** Marks parcel as flagged for issues like suspicious content or delivery problems. **Automatically notifies sender** about flagged status
 - **Authorization:** ADMIN or SUPER_ADMIN roles required
@@ -909,7 +909,7 @@ The system uses Passport.js with authentication strategies:
   </pre>
 
 ### 7. Block Parcel
-- **Endpoint:** `PATCH /parcel/blocked/:id`
+- **Endpoint:** `PATCH /api/parcel/blocked/:id`
 - **Purpose:** Blocks a parcel from further processing
 - **Description:** Prevents parcel from proceeding in delivery pipeline due to policy violations or issues. **Automatically notifies sender** about blocked status
 - **Authorization:** ADMIN or SUPER_ADMIN roles required
@@ -964,7 +964,7 @@ The system uses Passport.js with authentication strategies:
 }
   </pre>
 ### 8. Approve Parcel
-- **Endpoint:** `PATCH /parcel/approved/:trackingID`
+- **Endpoint:** `PATCH /api/parcel/approved/:trackingID`
 - **Purpose:** Approves parcel and assigns delivery agent
 - **Description:** Changes status to approved and ** assigns specific delivery agent** to handle the parcel. Creates delivery info with assigned person details. **Automatically notifies sender** about approval
 - **Authorization:** ADMIN or SUPER_ADMIN roles required
@@ -1029,7 +1029,7 @@ The system uses Passport.js with authentication strategies:
 ## ( note : The parcel status will be ASSIGNED_TO not APPROVED cause only after the Parcel being APPROVED it can be ASSIGNED)
 
 ### 9. Dispatch Parcel
-- **Endpoint:** `PATCH /parcel/dispatch/:parcelId`
+- **Endpoint:** `PATCH /api/parcel/dispatch/:parcelId`
 - **Purpose:** Marks parcel as dispatched from warehouse
 - **Description:** Updates status to dispatched and **automatically sends email notification** to receiver with complete dispatch details including delivery person info
 - **Authorization:** DELIVERY_AGENT role required
@@ -1101,7 +1101,7 @@ The system uses Passport.js with authentication strategies:
   </pre>
 
 ### 10. Set In Transit
-- **Endpoint:** `PATCH /parcel/in_transit/:id`
+- **Endpoint:** `PATCH /api/parcel/in_transit/:id`
 - **Purpose:** Updates parcel status to in transit
 - **Description:** Marks parcel as currently being transported by delivery agent
 - **Authorization:** DELIVERY_AGENT role required
@@ -1189,7 +1189,7 @@ The system uses Passport.js with authentication strategies:
   </pre>
 
 ### 11. Send OTP
-- **Endpoint:** `PATCH /parcel/otp/send/:id`
+- **Endpoint:** `PATCH /api/parcel/otp/send/:id`
 - **Purpose:** Sends delivery confirmation OTP to receiver
 - **Description:** Generates and **automatically sends OTP via email** to receiver for secure parcel delivery confirmation. Creates OTP record with 1-minute expiry
 - **Authorization:** DELIVERY_AGENT role required
@@ -1285,7 +1285,7 @@ The system uses Passport.js with authentication strategies:
   </pre>
 
 ### 12. Verify OTP
-- **Endpoint:** `PATCH /parcel/otp/verify/:id`
+- **Endpoint:** `PATCH /api/parcel/otp/verify/:id`
 - **Purpose:** Confirms parcel delivery using OTP verification
 - **Description:** Validates OTP and marks parcel as delivered. **Smart receiver handling:**
   - **If receiver is registered:** Only the registered receiver can verify OTP
@@ -1442,7 +1442,7 @@ For successfull response
 }
 ```
 ### 13. Public Parcel Tracking
-- **Endpoint:** `GET /parcel/track/:id`  
+- **Endpoint:** `GET /api/parcel/track/:id`  
 - **Purpose:** Retrieve public tracking details of a parcel  
 - **Description:** Returns parcel’s **tracking ID, name, current status, delivery date, tracking events, and receiver name**. This route is public and does **not require authentication**  
 - **Authorization:** ❌ No authentication required  
@@ -1516,7 +1516,7 @@ For successfull response
 ---
 
 ### 14. Delete Parcel
-- **Endpoint:** `DELETE /parcel/delete/:id`  
+- **Endpoint:** `DELETE /api/parcel/delete/:id`  
 - **Purpose:** Delete a parcel if it is still in **REQUESTED** status  
 - **Description:** Allows a **sender** to delete their parcel request before it is processed. Once status changes (e.g., APPROVED, IN_TRANSIT, DELIVERED), deletion is not allowed  
 - **Authorization:** Requires authentication (`SENDER` role only)  
