@@ -20,7 +20,7 @@ const handleGetAllUser = catchAsyncFunction(async (req: Request, res: Response, 
     const token = req.user
     const allUser = await userService.getAllUser(token as JwtHeader);
     handleResponse(res, {
-        statusCode: httpStatus.CREATED,
+        statusCode: httpStatus.OK,
         success: true,
         message: "All user retrieved successfully",
         data: allUser

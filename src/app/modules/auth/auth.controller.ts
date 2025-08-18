@@ -27,7 +27,7 @@ const handleUserLogin = catchAsyncFunction(async (req: Request, res: Response, n
         const userToken = getJwtToken(userWithoutPassword);
         setTokenIntoCookies(res, userToken)
         handleResponse(res, {
-            statusCode: httpStatus.CREATED,
+            statusCode: httpStatus.OK,
             success: true,
             message: "User login successful",
             data: {

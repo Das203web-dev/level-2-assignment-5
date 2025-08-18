@@ -170,6 +170,7 @@ const dispatchParcel = async (token: JwtPayload, parcelId: string) => {
                 templateData: emailBody
             })
         } catch (error) {
+            console.error("Email sending failed in production:", error);
             throw new AppError(httpStatus.BAD_REQUEST, "Something went wrong in the email.")
         }
         parcel.parcelStatus = parcelDispatched?.parcelStatus;
@@ -234,7 +235,6 @@ const sendOTP = async (token: JwtPayload, parcelId: string) => {
     return parcelUpdate
 }
 
-// old code 
 const confirmParcel = async (token: JwtPayload, parcelID: string, otp: number) => {
     const getToken = await checkTokenExistence(token);
     const parcelFromOtp = await OTP.findOne({ parcelId: parcelID });
