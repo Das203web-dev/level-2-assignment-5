@@ -22,7 +22,13 @@ const createParcel = async (payload: Partial<IParcel>, token: JwtPayload) => {
     if (getToken.role === Role.RECEIVER || getToken.role === Role.DELIVERY_AGENT) {
         throw new AppError(httpStatus.BAD_REQUEST, `Sorry ${getToken.role} does not create parcel request`)
     }
-    const findReceiver = await User.findOne({ email: payload.receiverInfo?.receiverEmail }).select("userId name email");
+    const findReceiver = await User.findOne({
+        email: payload.receiverInfo?.receiverEmail,
+        userStatus: { $ne: UserStatus.BLOCKED }
+    }).select("userId name email userStatus");
+    if (!findReceiver) {
+        throw new AppError(httpStatus.BAD_REQUEST, `Sorry this user is not exist or blocked`)
+    }
 
     const parcelBody = {
         ...payload,
@@ -295,12 +301,13 @@ const deleteParcel = async (parcelId: string, token: JwtPayload) => {
 const incomingParcels = async (token: JwtPayload) => {
     await checkTokenExistence(token);
     const statusForIncomingParcels = [
-        ParcelStatus.DELIVERED,
-        ParcelStatus.CANCELLED
+        ParcelStatus.ASSIGNED_TO,
+        ParcelStatus.DISPATCHED,
+        ParcelStatus.IN_TRANSIT
     ]
     const findParcels = await Parcel.find({
         "receiverInfo.receiverId": token.userId,
-        parcelStatus: { $nin: statusForIncomingParcels }
+        parcelStatus: { $in: statusForIncomingParcels }
     }, { _id: 0 })
     if (!findParcels || findParcels.length < 1) {
         throw new AppError(httpStatus.NOT_FOUND, "Sorry no parcels found")
