@@ -132,7 +132,7 @@ The system uses Passport.js with authentication strategies:
     },
     "message": "Access token updated"}
   </pre>
-## ( note : status is 200 )
+## ( note : status is 201 )
 
 ### 4. Reset Password
 - **Endpoint:** `POST /api/auth/reset-password`
@@ -223,7 +223,7 @@ The system uses Passport.js with authentication strategies:
     "err": "[\n  {\n    \"expected\": \"string\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"role\"\n    ],\n    \"message\": \"Role is required\"\n  }\n]"
   </pre>
 
-  ## ( note : status is 200 and the response is coming without the password field for better security )
+  ## ( note : status is 201 and the response is coming without the password field for better security )
 
 ### 2. Get All Users
 - **Endpoint:** `GET /api/user/all`
@@ -555,7 +555,7 @@ The system uses Passport.js with authentication strategies:
     "err": "Permission not granted",
     "stack": "Error: Permission not granted\n    at F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:20:19\n    at Generator.next (<anonymous>)\n    at fulfilled (F:\\LEVEL-2-DEV-COURSE\\level 2 assignment 5\\src\\app\\middlewares\\checkUser.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)"}
 </pre>
-## ( note : status is 200 )
+## ( note : status is 201 )
 
 ### 2. Get All Parcels
 - **Endpoint:** `GET /api/parcel/all-parcel`
@@ -691,7 +691,7 @@ The system uses Passport.js with authentication strategies:
 ### 3. Get Incoming Parcels
 - **Endpoint:** `GET /api/parcel/incoming`
 - **Purpose:** Shows all parcels coming to the receiver
-- **Description:** Returns parcels addressed to the authenticated receiver that are not yet delivered or cancelled
+- **Description:** Returns parcels addressed to the authenticated receiver that are not yet delivered or cancelled or flagged
 - **Authorization:** RECEIVER role required
   <pre>
     {
@@ -1042,7 +1042,7 @@ The system uses Passport.js with authentication strategies:
     "message": "Parcel approved"
 }
   </pre>
-## ( note : The parcel status will be ASSIGNED_TO not APPROVED cause only after the Parcel being APPROVED it can be ASSIGNED)
+## ( note : The parcel status will be ASSIGNED_TO not APPROVED cause only after the Parcel being APPROVED it can be ASSIGNED and status is 200)
 
 ### 9. Dispatch Parcel
 - **Endpoint:** `PATCH /api/parcel/dispatch/:parcelId`
